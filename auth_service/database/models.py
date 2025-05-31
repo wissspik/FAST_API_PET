@@ -19,7 +19,7 @@ class User(Base):
         unique = True
     )
     password: Mapped[str]   = mapped_column(
-        String(36),
+        String(136),
         nullable = False,
         unique = False,
         index = True

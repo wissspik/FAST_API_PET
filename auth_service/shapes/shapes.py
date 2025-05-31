@@ -1,4 +1,10 @@
-from pydantic import BaseModel, SecretStr, Field, field_validator
+from pydantic import BaseModel
+
 class Registration(BaseModel):
     login: str
-    password: str = Field(min_length=12, max_length=36)
+    password: str
+    confir_password: str
+
+class Authorization(BaseModel):
+    login : str
+    password : str
