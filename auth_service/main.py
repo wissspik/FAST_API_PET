@@ -1,11 +1,11 @@
 from fastapi import FastAPI
-from auth_service.routees.registration import app as registration
+from auth_service.routees.aut import app as registration
 from starlette.middleware.cors import CORSMiddleware
 from auth_service.routees.db import app as db
 app = FastAPI()
 
 origins = [
-    "http://localhost",
+    "http://localhost:3000",
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -15,3 +15,4 @@ app.add_middleware(
 )
 app.include_router(registration)
 app.include_router(db)
+
