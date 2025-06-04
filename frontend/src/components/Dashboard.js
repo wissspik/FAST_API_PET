@@ -12,45 +12,60 @@ const products = [
 // Пустые блоки для категорий (будут заменены на реальные данные)
 const categoryPlaceholders = Array(6).fill(null);
 
-const Dashboard = () => (
-  <div className="dashboard-main">
-    <header className="dashboard-header">
-      <div className="logo">Shopcart</div>
-      <nav>
-        <a href="#">Home</a>
-        <a href="#">Categories</a>
-        <a href="#">Deals</a>
-        <a href="#">Delivery</a>
-        <input type="text" placeholder="Search Product" />
-      </nav>
-      <div className="user-cabinet">
-        <span className="user-icon" title="Личный кабинет">👤</span>
-      </div>
-    </header>
+const Dashboard = () => {
+  const handleLogout = () => {
+    // Здесь будет логика выхода
+    console.log('Logout clicked');
+  };
 
-    <section className="dashboard-categories">
-      <h2>Categories</h2>
-      <div className="categories-list">
-        {categoryPlaceholders.map((_, idx) => (
-          <div className="category-card placeholder" key={idx} />
-        ))}
-      </div>
-    </section>
-
-    <section className="dashboard-products">
-      <h2>Products</h2>
-      <div className="products-list">
-        {products.map(product => (
-          <div className="product-card" key={product.id}>
-            <div className="product-img">{product.img}</div>
-            <div className="product-name">{product.name}</div>
-            <div className="product-price">{product.price}</div>
-            <button>Add to Cart</button>
+  return (
+    <div className="dashboard-main">
+      <header className="dashboard-header">
+        <div className="logo">Shopcart</div>
+        <nav className="main-nav">
+          <a href="#" className="nav-link">Home</a>
+          <a href="#" className="nav-link">Categories</a>
+          <a href="#" className="nav-link">Deals</a>
+          <a href="#" className="nav-link">Delivery</a>
+          <div className="search-container">
+            <input type="text" placeholder="Search Product" className="search-input" />
+            <button className="search-button">🔍</button>
           </div>
-        ))}
-      </div>
-    </section>
-  </div>
-);
+        </nav>
+        <div className="user-actions">
+          <span className="user-icon" title="Личный кабинет">👤</span>
+          <button className="logout-button" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </header>
+
+      <section className="dashboard-categories">
+        <h2 className="section-title">Categories</h2>
+        <div className="categories-list">
+          {categoryPlaceholders.map((_, idx) => (
+            <div className="category-card placeholder" key={idx} />
+          ))}
+        </div>
+      </section>
+
+      <section className="dashboard-products">
+        <h2 className="section-title">Products</h2>
+        <div className="products-list">
+          {products.map(product => (
+            <div className="product-card" key={product.id}>
+              <div className="product-img">{product.img}</div>
+              <div className="product-info">
+                <div className="product-name">{product.name}</div>
+                <div className="product-price">{product.price}</div>
+                <button className="add-to-cart-button">Add to Cart</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+};
 
 export default Dashboard; 

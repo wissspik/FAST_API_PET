@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from fastapi import HTTPException,Cookie,Depends,status
 from typing import Annotated
 from uuid import uuid4
+import time
 load_dotenv()
 
 ALGORITHM = os.getenv("ALGORITHM")
@@ -31,7 +32,7 @@ def create_access_token(user_id : int,additional_claims: dict = None) -> str:
 def create_refresh_token(user_id:int) -> str:
     jti = str(uuid4())
     now = datetime.now(timezone.utc)
-    expire = now + timedelta(days=int(REFRESH_TOKEN_EXPIRE_DAYS) * 86400)
+    expire = now + timedelta(days=int(REFRESH_TOKEN_EXPIRE_DAYS))
     payload = {
         "sub": str(user_id),
         "jti": jti,
@@ -49,7 +50,20 @@ def create_refresh_token(user_id:int) -> str:
     return token
 
 
-def get_current_user(access_token: Annotated[str | None, Cookie()]) -> str:
+
+
+async def is_token_revoked(jti : str,token_iat : int) -> bool:
+
+    logout_ts_raw = redis_client.get(f"refresh_jti:{jti}")
+    if logout_ts_raw is None:
+        return False
+    try:
+        logout_ts = int(logout_ts_raw)
+    except ValueError:
+        return True
+    return token_iat < logout_ts
+
+async def get_current_user(access_token:  str | None = Cookie(default=None)) -> str:
 
     if access_token is None:
         raise HTTPException(
@@ -74,115 +88,53 @@ def get_current_user(access_token: Annotated[str | None, Cookie()]) -> str:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Payload токена не содержит sub"
         )
-    return user_id
-
-
-
-'''
-from datetime import datetime, timedelta, timezone
-from typing import Annotated
-
-import jwt
-from fastapi import FastAPI, Depends, HTTPException, status, Cookie
-from fastapi.responses import JSONResponse
-
-app = FastAPI()
-
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-def create_access_token(data: dict) -> str:
-    """
-    Функция генерации JWT с полем exp, iat.
-    """
-    to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire, "iat": datetime.now(timezone.utc)})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-
-def get_current_user(access_token: Annotated[str | None, Cookie()]) -> str:
-    """
-    Зависимость (dependency) для извлечения и валидации JWT из cookie "access_token".
-    Если токена нет или он невалиден/просрочен — кидает HTTPException 401.
-    Если всё ок, возвращает user_id из поля "sub" payload-а.
-    """
-    if access_token is None:
+    token_iat = payload.get("iat", 0)
+    if is_token_revoked(user_id, token_iat):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Access token не найден в Cookie"
+            detail="Токен отозван (пользователь вышел)"
         )
+    return user_id
+async def extract_jti_from_refresh_token(rt_token: str) -> str:
+    """
+    Декодируем Refresh-Token, чтобы достать из payload поле "jti".
+    Если токен неверный или просрочен, можно выбросить HTTPException.
+    """
     try:
-        payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(rt_token, SECRET_KEY, algorithms=[ALGORITHM])
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Access token просрочен"
+            detail="Refresh token просрочен"
         )
     except jwt.InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Невалидный access token"
+            detail="Невалидный Refresh token"
         )
 
-    user_id: str | None = payload.get("sub")
-    if user_id is None:
+    jti = payload.get("jti")
+    user_id = payload.get("sub")
+    if jti is None or user_id is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Payload токена не содержит sub"
+            detail="В Refresh token нет полей jti или sub"
         )
+    return jti, user_id  # вернём и jti, и user_id
 
-    return user_id
 
-
-@app.post("/login")
-def login_handler(response: JSONResponse, username: str, password: str):
+async def delete_refresh_jti_from_redis(jti: str) -> None:
     """
-    Пример простого /login, который на основе username/password возвращает JWT в HttpOnly-cookie.
+    Удаляем из Redis ключ, связанный с данным jti Refresh-Token'а
+    (чтобы больше нельзя было обменять его на новый Access-Token).
     """
-    # 1) Здесь должна быть ваша проверка логина/пароля (DB, bcrypt и т.д.)
-    #    Для примера примем, что любой непустой логин/пароль проходит:
-    if not username or not password:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Неверные учётные данные")
-
-    user_id = "user123"  # допустим, после проверки в БД мы получили такой ID
-
-    # 2) Создаём access_token
-    access_token = create_access_token({"sub": user_id})
-
-    # 3) Кладём JWT в HttpOnly-cookie
-    response = JSONResponse({"message": "Успешный логин"})
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=True,          # https-only
-        samesite="strict",    # или "lax"
-        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    )
-    return response
-
-
-@app.get("/protected")
-def protected_route(current_user: str = Depends(get_current_user)):
+    redis_key = f"refresh_jti:{jti}"
+    redis_client.delete(redis_key)
+async def set_logout_timestamp_for_user(user_id: str) -> None:
     """
-    Пример «защищённого» маршрута.
-    Если get_current_user не вернул HTTPException, значит токен валиден,
-    и current_user — это user_id из поля "sub".
+    Ставим в Redis метку «logout» для данного user_id,
+    чтобы все Access-Token'ы до этого момента считались отозванными.
     """
-    return {"message": f"Привет, {current_user}! Вы авторизованы."}
+    now_ts = int(time.time())
+    redis_client.set(f"logout:{user_id}", now_ts)
 
-
-@app.post("/logout")
-def logout(response: JSONResponse, current_user: str = Depends(get_current_user)):
-    """
-    Для примера: при выходе мы просто затираем куку.
-    (В реальном приложении стоит ещё «отозвать»/удалить Refresh-токен в базе.)
-    """
-    response = JSONResponse({"message": f"Пользователь {current_user} вышел"})
-    response.delete_cookie("access_token", path="/")
-    return response
-
-
-'''
