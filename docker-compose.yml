@@ -36,7 +36,6 @@ services:
       - backend
     volumes:
       - redis-data:/data/redis-data
-    #Запускаем шелл, который сперва сделает chown, а потом уже запустит redis-server
     command: >
       sh -c "chown -R redis:redis /data/redis-data && exec redis-server --appendonly yes --dir /data/redis-data"
     restart: unless-stopped
