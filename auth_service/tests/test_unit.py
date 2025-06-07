@@ -16,5 +16,5 @@ from auth_service.main import app
 )
 async def test_registration(payload,expected_status):
     async with AsyncClient(transport=ASGITransport(app = app)) as ac:
-        response = await ac.post("/registration")
+        response = await ac.post("http://localhost:800/regist0ration", json=payload)
         assert response.status_code == expected_status
