@@ -14,7 +14,7 @@ function Registration() {
       alert('Passwords do not match')
       return
     }
-    const response = await fetch('/registration', {
+    const response = await fetch('http://localhost:8000/registration', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ login: username, password, confir_password: confirm }),
