@@ -30,6 +30,10 @@ function Login() {
           required
         />
         <button type="submit">Login</button>
+        <div className="oauth-buttons">
+          <a href="/auth/google" className="oauth-btn google">Google</a>
+          <a href="/auth/github" className="oauth-btn github">GitHub</a>
+        </div>
         <p>
           Don't have an account?{' '}
           <Link to="/registration">Register</Link>
