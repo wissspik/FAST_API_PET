@@ -2,19 +2,24 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import './AuthForm.css'
 
-function Login() {
+function Registration() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // TODO: handle login
+    if (password !== confirm) {
+      alert('Passwords do not match')
+      return
+    }
+    // TODO: handle registration
   }
 
   return (
     <div className="page">
       <form className="auth-card" onSubmit={handleSubmit}>
-        <h2>Login</h2>
+        <h2>Registration</h2>
         <input
           type="text"
           placeholder="Username"
@@ -29,18 +34,20 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <div className="oauth-buttons">
-          <button type="button" className="oauth google">Google</button>
-          <button type="button" className="oauth github">GitHub</button>
-        </div>
-        <button type="submit">Login</button>
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          required
+        />
+        <button type="submit">Register</button>
         <p>
-          Don't have an account?{' '}
-          <Link to="/registration">Register</Link>
+          Already have an account? <Link to="/login">Login</Link>
         </p>
       </form>
     </div>
   )
 }
 
-export default Login
+export default Registration
