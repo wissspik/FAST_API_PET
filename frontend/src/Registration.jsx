@@ -1,19 +1,30 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import './AuthForm.css'
 
 function Registration() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
+  const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (password !== confirm) {
       alert('Passwords do not match')
       return
     }
-    // TODO: handle registration
+    const response = await fetch('/registration', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ login: username, password, confir_password: confirm }),
+    })
+    if (response.ok) {
+      navigate('/feed')
+    } else {
+      const data = await response.json().catch(() => ({}))
+      alert(data.detail || 'Registration failed')
+    }
   }
 
   return (

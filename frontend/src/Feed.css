@@ -1,0 +1,23 @@
+.feed-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #ffffff;
+}
+
+.cash-button {
+  background: #4caf50;
+  color: #fff;
+  padding: 1.2rem 2rem;
+  font-size: 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cash-display {
+  font-size: 3rem;
+  margin-top: 1rem;
+}
