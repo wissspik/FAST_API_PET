@@ -128,6 +128,6 @@ async def get_refresh_jti(refresh_token: str = Cookie(None,alias="refresh_token"
         httponly=True,
         secure=True,
         samesite="strict",
-        max_age=int(ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
+        max_age=int(ACCESS_TOKEN_EXPIRE_MINUTES) ,
     )
     return response
