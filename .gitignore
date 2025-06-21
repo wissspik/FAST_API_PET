@@ -1,3 +1,11 @@
 .gitignore
 .env
 .venv
+
+# Node artifacts
+node_modules/
+dist/
+
+# Python artifacts
+__pycache__/
+*.pyc
