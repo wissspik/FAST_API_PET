@@ -18,7 +18,7 @@ function Registration() {
 
   return (
     <div className="page">
-      <form className="auth-card" onSubmit={handleSubmit}>
+      <form className="form-container" onSubmit={handleSubmit}>
         <h2>Registration</h2>
         <input
           type="text"
