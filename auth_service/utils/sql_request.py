@@ -3,9 +3,13 @@ from auth_service.database.models import User
 from sqlalchemy import select
 from auth_service.utils.password_val_hash import hash_password,verify_password
 
-# нахождение п
+async def get_user_id(session:SessionDep,id : str) -> bool:
+    stmt = select(User).filter_by(id=id)
+    result = await session.execute(stmt)
+    found_user = result.scalar_one_or_none()
+    return found_user
+
 async def get_user_login(session:SessionDep,login : str) -> bool:
-    print(login)
     stmt = select(User).filter_by(login=login)
     result = await session.execute(stmt)
     found_user = result.scalar_one_or_none()

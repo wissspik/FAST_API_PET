@@ -36,7 +36,7 @@ class User(Base):
         unique=True,
         index=True
     )
-    phone: Mapped[str] = mapped_column(
+    phone: Mapped[str] = mapped_column( # нужно удалить
         String(11),
         unique=True,
         nullable = True,

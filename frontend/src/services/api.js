@@ -1,52 +1,35 @@
-const API_URL = 'http://localhost:8000';
+import axios from 'axios';
 
-export const register = async (login, password, confirmPassword) => {
-  try {
-    const response = await fetch(`${API_URL}/registration`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        login,
-        password,
-        confir_password: confirmPassword,
-      }),
-    });
+const api = axios.create({
+  withCredentials: true,
+});
 
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.detail || 'Registration failed');
+// Add response interceptor for handling 401 errors
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // If error is 401 and we haven't tried to refresh token yet
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        // Try to refresh token
+        await api.post('/refresh');
+        // Retry the original request
+        return api(originalRequest);
+      } catch (refreshError) {
+        // If refresh fails, redirect to login only if not already on login page
+        if (!window.location.pathname.includes('/login')) {
+          window.location.href = '/login';
+        }
+        return Promise.reject(refreshError);
+      }
     }
 
-    return data;
-  } catch (error) {
-    throw error;
+    return Promise.reject(error);
   }
-};
+);
 
-export const login = async (login, password) => {
-  try {
-    const response = await fetch(`${API_URL}/entrance`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        login,
-        password,
-      }),
-    });
-
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.detail || 'Login failed');
-    }
-
-    return data;
-  } catch (error) {
-    throw error;
-  }
-}; 
+export default api; 
