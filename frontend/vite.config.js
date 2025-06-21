@@ -16,11 +16,6 @@ export default defineConfig({
         changeOrigin: true,
         secure: false
       },
-      '/refresh': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-        secure: false
-      },
       '/protected': {
         target: 'http://localhost:8000',
         changeOrigin: true,

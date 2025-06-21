@@ -1,19 +1,31 @@
 // src/components/PrivateRoute.js
 import React, { useState, useEffect } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 
 export default function PrivateRoute() {
   const [auth, setAuth] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('/entrance', { withCredentials: true })
-      .then(() => setAuth(true))
-      .catch(() => setAuth(false));
+    const checkAuth = async () => {
+      try {
+        // Проверяем аутентификацию через GET /protected
+        await api.get('/protected');
+        setAuth(true);
+      } catch (error) {
+        // Если получаем 401 или другую ошибку, считаем пользователя неавторизованным
+        setAuth(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
-  if (auth === null) {
-    return <div className="text-center">Checking authentication...</div>;
+  if (loading) {
+    return <div className="text-center">Проверка аутентификации...</div>;
   }
 
   return auth ? <Outlet /> : <Navigate to="/login" replace />;

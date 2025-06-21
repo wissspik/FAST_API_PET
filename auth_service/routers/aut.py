@@ -128,6 +128,17 @@ async def logout(
     response.delete_cookie("refresh_token")
     return response
 @app.get("/protected")
-async def protect(_ = Depends(get_current_user)):
+async def protect(current_user = Depends(get_current_user)):
+    """
+    Проверяет аутентификацию пользователя через access_token из куки.
+    Если токен валидный - возвращает информацию о пользователе, иначе 401.
+    """
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"message": "Пользователь аутентифицирован", "user_id": current_user}
+    )
+@app.get("/refresh")
+async def protect(current_user = Depends(get_refresh_jti)):
+    return current_user
 
-    return {"message":"Ok"}
+
