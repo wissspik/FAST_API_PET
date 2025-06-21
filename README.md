@@ -42,7 +42,7 @@ In a separate terminal:
 cd frontend
 npm run dev
 ```
-This serves the React application using Vite.
+This serves the React application using Vite on `http://localhost:3000`.
 
 ## Environment variables
 Create an `.env` file inside the `auth_service` folder with the following values:
