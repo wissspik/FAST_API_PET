@@ -114,19 +114,6 @@ async def entrance(data:Authorization,session:SessionDep):
             status_code=status.HTTP_409_CONFLICT,
             content={"detail": "Неверный логин или пароль"}
     )
-@app.post("/logout",status_code=status.HTTP_204_NO_CONTENT)
-async def logout(
-    jti_refresh: str = Depends(get_refresh_jti),
-    jti_access: str = Depends(get_access_jti)):
-
-    redis_client.detete(jti_refresh)
-
-    redis_client.set(f"bl:{jti_access}", 1) # сделать время жизни
-
-    response = JSONResponse({"message": "Logout seccessfully"})
-    response.delete_cookie("access_token")
-    response.delete_cookie("refresh_token")
-    return response
 @app.get("/protected")
 async def protect(current_user = Depends(get_current_user)):
     """
