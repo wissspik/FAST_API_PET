@@ -124,21 +124,11 @@ async def protect(current_user = Depends(get_current_user)):
         content={"message": "Пользователь аутентифицирован", "user_id": current_user}
     )
 @app.get("/refresh")
-async def refresh_token():
+async def refresh_token(Cookies:str = Depends(get_refresh_jti)):
     """
     Обновляет access_token используя refresh_token из куки.
     Если refresh_token валидный - возвращает новый access_token, иначе 401.
     """
-    try:
-        # Используем функцию get_refresh_jti для проверки refresh_token
-        # и создания нового access_token
-        response = await get_refresh_jti()
-        return response
-    except HTTPException as e:
-        # Если refresh_token недействителен, возвращаем ошибку
-        return JSONResponse(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            content={"detail": "Refresh token is invalid or expired"}
-        )
+    return Cookies
 
 

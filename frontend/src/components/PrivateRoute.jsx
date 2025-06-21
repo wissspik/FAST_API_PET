@@ -12,10 +12,11 @@ export default function PrivateRoute() {
         // Проверяем аутентификацию через GET /protected
         // Если access_token отсутствует или недействителен, 
         // интерцептор автоматически попытается обновить токен через /refresh
+        // и при успехе сделает повторный запрос на /protected
         await api.get('/protected');
         setAuth(true);
       } catch (error) {
-        // Если и обновление токена не помогло, считаем пользователя неавторизованным
+        // Если все попытки не удались, считаем пользователя неавторизованным
         setAuth(false);
       } finally {
         setLoading(false);

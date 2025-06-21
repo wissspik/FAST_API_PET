@@ -1,7 +1,18 @@
 from datetime import datetime, timedelta, timezone
 import os
 import jwt
-from jwt import ExpiredSignatureError, InvalidTokenError
+from jwt import (
+    ExpiredSignatureError,
+    ImmatureSignatureError,
+    InvalidIssuedAtError,
+    InvalidSignatureError,
+    InvalidAlgorithmError,
+    DecodeError,
+    MissingRequiredClaimError,
+    InvalidAudienceError,
+    InvalidIssuerError,
+    InvalidTokenError
+)
 from fastapi.responses import JSONResponse
 from auth_service.utils.sql_request import get_user_id
 from auth_service.database.redis import redis_client
@@ -99,17 +110,40 @@ async def get_access_jti(access_token: str = Cookie(None,alias="access_token")) 
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="В access-токене нет jti")
     return jti
-
 async def get_refresh_jti(refresh_token: str = Cookie(None,alias="refresh_token")) -> str:
+    print(refresh_token)
     if not refresh_token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Нет refresh_token")
     try:
-        payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            refresh_token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM])
     except ExpiredSignatureError:
-        raise HTTPException(401, "Refresh-токен истёк")
+        # Токен просрочен
+        raise HTTPException(status_code=401, detail="Refresh-токен истёк")
+    except ImmatureSignatureError:
+        # Токен активируется позже, чем сейчас
+        raise HTTPException(status_code=401, detail="Токен ещё не действителен")
+    except InvalidIssuedAtError:
+        # Неверное поле iat
+        raise HTTPException(status_code=400, detail="Некорректное время выпуска токена")
+    except InvalidSignatureError:
+        # Подпись не совпадает
+        raise HTTPException(status_code=400, detail="Неверная подпись токена")
+    except DecodeError:
+        # Ошибка разбора (например, невалидная структура)
+        raise HTTPException(status_code=400, detail="Не удалось декодировать токен")
+    except MissingRequiredClaimError as e:
+        # Отсутствует обязательное поле (например, exp, iat, sub и т.п.)
+        raise HTTPException(status_code=400, detail=f"Отсутствует обязательное поле: {e.claim}")
+    except InvalidAlgorithmError:
+        # Если передан неподдерживаемый алгоритм
+        raise HTTPException(status_code=400, detail="Неверный алгоритм токена")
     except InvalidTokenError:
-        raise HTTPException(400, "Неверный формат или подпись токена")
+        # Любая другая ошибка проверки токена
+        raise HTTPException(status_code=400, detail="Неверный формат или подпись токена")
     jti = payload.get("jti")
     if not jti:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,

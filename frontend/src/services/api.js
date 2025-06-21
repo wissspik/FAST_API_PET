@@ -17,7 +17,11 @@ api.interceptors.response.use(
       try {
         // Try to refresh token
         await api.get('/refresh');
-        // Retry the original request
+        // If refresh was successful, make request to /protected
+        if (originalRequest.url === '/protected') {
+          return api.get('/protected');
+        }
+        // For other requests, retry the original request
         return api(originalRequest);
       } catch (refreshError) {
         // If refresh fails, redirect to login only if not already on login page
