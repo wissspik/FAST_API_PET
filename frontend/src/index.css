@@ -13,6 +13,15 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #6FB1FC 0%, #4364F7 100%);
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -23,7 +32,6 @@ a:hover {
 }
 
 body {
-  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
