@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Registration from './pages/Registration';
 import Dashboard from './pages/Dashboard';
+import NumberTable from './pages/NumberTable';
 import PrivateRoute from './components/PrivateRoute';
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/registration" element={<Registration />} />
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/number" element={<NumberTable />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

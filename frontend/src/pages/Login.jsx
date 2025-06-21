@@ -1,6 +1,5 @@
-// src/pages/Login.jsx
-import React, { useState, useEffect } from 'react';
-import api from '../services/api';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function Login() {
@@ -9,24 +8,12 @@ export default function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Проверка cookie при загрузке страницы
-  useEffect(() => {
-    // Отправляем куки на /protected
-    api.get('http://localhost:3000/protected')
-      .then(response => {
-        if (response.status === 200) {
-          navigate('/dashboard');
-        }
-      })
-      .catch(() => {
-        // Ошибка аутентификации — остаёмся на странице входа
-      });
-  }, [navigate]);
+
 
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await api.post('/entrance', { login, password });
+      await axios.post('/entrance', { login, password }, { withCredentials: true });
       navigate('/dashboard');
     } catch {
       setError('Invalid credentials');

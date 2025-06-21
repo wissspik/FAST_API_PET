@@ -3,6 +3,10 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  esbuild: {
+    jsxInject: "import React from 'react';",
+    include: /\.jsx$|\.js$/
+  },
   server: { 
     port: 3000,
     proxy: {
@@ -28,4 +32,4 @@ export default defineConfig({
       }
     }
   }
-}); 
+});

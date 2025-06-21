@@ -1,35 +1,15 @@
-// src/components/PrivateRoute.js
-import React, { useState, useEffect } from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
-import api from '../services/api';
+import React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 
 export default function PrivateRoute() {
-  const [auth, setAuth] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        // Проверяем аутентификацию через GET /protected
-        // Если access_token отсутствует или недействителен, 
-        // интерцептор автоматически попытается обновить токен через /refresh
-        // и при успехе сделает повторный запрос на /protected
-        await api.get('/protected');
-        setAuth(true);
-      } catch (error) {
-        // Если все попытки не удались, считаем пользователя неавторизованным
-        setAuth(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  if (loading) {
-    return <div className="text-center">Проверка аутентификации...</div>;
+  // Проверяем наличие cookie с access_token
+  const isAuthenticated = document.cookie.includes('access_token');
+  
+  // Если пользователь не аутентифицирован, перенаправляем на страницу входа
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
   }
 
-  return auth ? <Outlet /> : <Navigate to="/login" replace />;
+  // Если пользователь аутентифицирован, отображаем дочерние маршруты
+  return <Outlet />;
 }
