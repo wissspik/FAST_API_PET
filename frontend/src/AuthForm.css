@@ -42,3 +42,26 @@
 .auth-card a {
   color: #646cff;
 }
+
+.oauth-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.oauth-btn {
+  flex: 1;
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.oauth-btn.google {
+  background: #db4437;
+}
+
+.oauth-btn.github {
+  background: #333;
+}
