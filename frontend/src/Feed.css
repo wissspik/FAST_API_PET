@@ -1,23 +1,86 @@
 .feed-page {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: #ffffff;
+  min-height: 100vh;
+  background: #121212;
+  color: #fff;
+  font-family: system-ui, sans-serif;
 }
 
-.cash-button {
-  background: #4caf50;
-  color: #fff;
-  padding: 1.2rem 2rem;
-  font-size: 1.5rem;
-  border: none;
-  border-radius: 8px;
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: #1e1e1e;
+  padding: 1rem;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
   cursor: pointer;
 }
 
-.cash-display {
-  font-size: 3rem;
-  margin-top: 1rem;
+.menu-item:hover {
+  background: #2c2c2c;
+}
+
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.profile-block {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.feed-placeholder {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed #555;
+  border-radius: 8px;
+  background: #1e1e1e;
+  color: #aaa;
+}
+
+.stories-placeholder,
+.player-placeholder {
+  height: 80px;
+  border: 1px dashed #555;
+  border-radius: 8px;
+  background: #1e1e1e;
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    width: 200px;
+  }
 }
