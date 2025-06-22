@@ -19,7 +19,7 @@ body {
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, #6FB1FC 0%, #4364F7 100%);
+  background: #1e1e1e;
 }
 
 a {
