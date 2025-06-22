@@ -17,10 +17,11 @@ function Registration() {
     const response = await fetch('http://localhost:8000/registration', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ login: username, password, confir_password: confirm }),
     })
     if (response.ok) {
-      navigate('/feed')
+      navigate('/dashboard')
     } else {
       const data = await response.json().catch(() => ({}))
       alert(data.detail || 'Registration failed')
