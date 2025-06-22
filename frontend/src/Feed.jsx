@@ -1,21 +1,36 @@
 import avatar from './assets/react.svg'
 import './Feed.css'
+import {
+  ProfileIcon,
+  FeedIcon,
+  MessageIcon,
+  PhoneIcon,
+  FriendsIcon,
+  CommunitiesIcon,
+  PhotoIcon,
+  MusicIcon,
+  VideoIcon,
+  GameIcon,
+  MarketIcon,
+  FilesIcon,
+  HelpIcon,
+} from './icons.jsx'
 
 function Feed() {
   const menuItems = [
-    'Профиль',
-    'Лента',
-    'Мессенджер',
-    'Звонки',
-    'Друзья',
-    'Сообщества',
-    'Фото',
-    'Музыка',
-    'Видео',
-    'Игры',
-    'Маркет',
-    'Файлы',
-    'Помощь',
+    { label: 'Профиль', Icon: ProfileIcon },
+    { label: 'Лента', Icon: FeedIcon },
+    { label: 'Мессенджер', Icon: MessageIcon },
+    { label: 'Звонки', Icon: PhoneIcon },
+    { label: 'Друзья', Icon: FriendsIcon },
+    { label: 'Сообщества', Icon: CommunitiesIcon },
+    { label: 'Фото', Icon: PhotoIcon },
+    { label: 'Музыка', Icon: MusicIcon },
+    { label: 'Видео', Icon: VideoIcon },
+    { label: 'Игры', Icon: GameIcon },
+    { label: 'Маркет', Icon: MarketIcon },
+    { label: 'Файлы', Icon: FilesIcon },
+    { label: 'Помощь', Icon: HelpIcon },
   ]
 
   return (
@@ -24,9 +39,9 @@ function Feed() {
         <nav>
           <ul className="menu">
             {menuItems.map((item) => (
-              <li key={item} className="menu-item">
-                <span className="icon">📁</span>
-                <span className="label">{item}</span>
+              <li key={item.label} className="menu-item">
+                <item.Icon className="icon-svg" />
+                <span className="label">{item.label}</span>
               </li>
             ))}
           </ul>
