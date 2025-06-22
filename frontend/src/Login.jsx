@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './AuthForm.css'
 
@@ -7,15 +7,28 @@ function Login() {
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const res = await fetch('http://localhost:8000/protected', {
+        credentials: 'include',
+      })
+      if (res.ok) {
+        navigate('/dashboard')
+      }
+    }
+    checkAuth()
+  }, [navigate])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     const response = await fetch('http://localhost:8000/entrance', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ login: username, password }),
     })
     if (response.ok) {
-      navigate('/feed')
+      navigate('/dashboard')
     } else {
       const data = await response.json().catch(() => ({}))
       alert(data.detail || 'Login failed')
