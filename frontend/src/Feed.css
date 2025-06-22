@@ -11,6 +11,8 @@
   flex-shrink: 0;
   background: #1e1e1e;
   padding: 1rem;
+  /* Shift the sidebar further left */
+  margin-left: -250px;
 }
 
 .menu {
@@ -90,5 +92,6 @@
 @media (max-width: 700px) {
   .sidebar {
     width: 200px;
+    margin-left: -250px;
   }
 }
