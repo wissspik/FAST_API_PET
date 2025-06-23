@@ -8,16 +8,3 @@ services:
       POSTGRES_PASSWORD: test
       POSTGRES_DB: test
       POSTGRES_HOST_AUTH_METHOD: trust
-  backend:
-    build:
-      context: ../..
-      dockerfile: auth_service/Dockerfile
-    env_file:
-      - ./.env
-    depends_on:
-      - db
-    ports:
-      - "8000:8000"
-    command: >
-      sh -c "alembic upgrade head"
-
