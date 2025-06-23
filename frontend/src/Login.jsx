@@ -12,7 +12,24 @@ function Login() {
       const res = await fetch('http://localhost:8000/protected', {
         credentials: 'include',
       })
+
       if (res.ok) {
+        navigate('/feed')
+
+        return
+      }
+
+      const refreshRes = await fetch('http://localhost:8000/refresh', {
+        credentials: 'include',
+      })
+
+      if (!refreshRes.ok) return
+
+      const verify = await fetch('http://localhost:8000/protected', {
+        credentials: 'include',
+      })
+
+      if (verify.ok) {
         navigate('/feed')
       }
     }
