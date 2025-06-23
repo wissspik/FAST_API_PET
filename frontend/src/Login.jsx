@@ -13,7 +13,7 @@ function Login() {
         credentials: 'include',
       })
       if (res.ok) {
-        navigate('/dashboard')
+        navigate('/feed')
       }
     }
     checkAuth()
@@ -28,7 +28,7 @@ function Login() {
       body: JSON.stringify({ login: username, password }),
     })
     if (response.ok) {
-      navigate('/dashboard')
+      navigate('/feed')
     } else {
       const data = await response.json().catch(() => ({}))
       alert(data.detail || 'Login failed')
