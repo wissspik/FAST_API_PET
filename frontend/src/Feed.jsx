@@ -54,6 +54,14 @@ function Feed() {
     checkAuth()
   }, [navigate])
 
+  const handleLogout = async () => {
+    await fetch('http://localhost:8000/logout', {
+      method: 'POST',
+      credentials: 'include',
+    })
+    navigate('/login')
+  }
+
   const menuItems = [
     { label: 'Профиль', Icon: ProfileIcon },
     { label: 'Лента', Icon: FeedIcon },
@@ -97,7 +105,7 @@ function Feed() {
                 <SettingsIcon className="icon-svg" />
                 <span>Настройки</span>
               </div>
-              <div className="profile-menu-item">
+              <div className="profile-menu-item" onClick={handleLogout}>
                 <LogoutIcon className="icon-svg" />
                 <span>Выход</span>
               </div>
