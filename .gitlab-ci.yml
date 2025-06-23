@@ -1,0 +1,22 @@
+image: python:3.12-alpine
+
+stage:
+  - test
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+before_script:
+  # Обновляем pip и ставим зависимости из requirements.txt
+  - pip install --upgrade pip
+  - pip install -r auth_service/requirements.txt
+
+test:
+  stage: test
+  script:
+    # запускается тесты
+
+  # можно сохранить отчёты в файлы

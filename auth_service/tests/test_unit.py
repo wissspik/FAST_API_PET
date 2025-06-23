@@ -16,7 +16,16 @@ from auth_service.utils.sql_request import get_user_login
         ({'login':'TestUsers','password':'error','confir_password':'QWER!10ww'},409),
         ({'login':'ooo','password':'QWER!10ww','confir_password':'QWER!10ww'},409),
         ({'login': 'TestUsers', 'password': 'Sugar2220', 'confir_password': 'Sugar2220'}, 409),
-        {'login': 'TestUsers', 'password': 'Sugar2220', 'confir_password': 'Sugar2220'}, 409]
+        ({'login': 'TestUsers', 'password': 'Sugar2220', 'confir_password': 'Sugar2220'}, 409),
+        ({'login': 'TestUsers', 'password': 'Sugar2220', 'confir_password': 'Sugar2220'}, 409),
+        ({'login': 123, 'password': 'Sugar2220', 'confir_password': 'Sugar2220'}, 422),
+        ({'login': 'TestUsers', 'password': 123, 'confir_password': 'Sugar2220'}, 422),
+        ({'login': 'TestUsers', 'password': 'Sugar2220', 'confir_password': 123}, 422),
+        ({'login': None, 'password': None, 'confir_password': 'Sugar2220'}, 422),
+
+
+
+                ]
 )
 async def test_registration(session:SessionDep,payload,expected_status):
     async with AsyncClient(transport=ASGITransport(app = app)) as ac:
