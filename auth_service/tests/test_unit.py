@@ -1,7 +1,9 @@
 import pytest
 from httpx import ASGITransport,AsyncClient
-
+from auth_service.database.models import User
+from sqlalchemy import select,func
 from auth_service.main import app
+from auth_service.database.base import SessionDep
 
 
 
@@ -14,7 +16,12 @@ from auth_service.main import app
         ({'login':'ooo','password':'QWER!10ww','confir_password':'QWER!10ww'},409),
         ({'login': 'TestUsers', 'password': 'Sugar2220', 'confir_password': 'Sugar2220'}, 409),]
 )
-async def test_registration(payload,expected_status):
+async def test_registration(session:SessionDep,payload,expected_status):
     async with AsyncClient(transport=ASGITransport(app = app)) as ac:
-        response = await ac.post("http://localhost:800/registration", json=payload)
+        response = await ac.post("http://localhost:8000/registration", json=payload)
+        if expected_status == 200:
+            stmt = select(func.count()).select_from(User)
+            result = await session.execute(stmt)
+            total_users = result.scalar_one()  # возвращает целое число
+            assert total_users == 1
         assert response.status_code == expected_status

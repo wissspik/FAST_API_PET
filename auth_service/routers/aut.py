@@ -132,17 +132,17 @@ async def refresh_token(Cookies:str = Depends(get_access_w_refresh)):
     Если refresh_token валидный - возвращает новый access_token, иначе 401.
     """
     return Cookies
-@app.post("logout")
+@app.post("/logout")
 async def logout(response:Response,Cookie_refresh:str = Depends(get_refresh_jti),Cookie_access: str = Depends(get_access_token)):
     # удаляем jti рефреша из редис
-    redis_client.delete(get_refresh_jti)
+    redis_client.delete(Cookie_refresh)
 
     jti = Cookie_access['jti']
     exp = Cookie_access['exp']
 
     ttl = int(exp - time.time())
     if ttl > 0:
-        redis_client.set(f"bl{jti}",ttl,1)
+        redis_client.set(f"bl:{jti}",ttl,1)
     response.delete_cookie("access_token", path="/")
     response.delete_cookie("refresh_token", path="/")
 
