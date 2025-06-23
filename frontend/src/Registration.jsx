@@ -21,7 +21,7 @@ function Registration() {
       body: JSON.stringify({ login: username, password, confir_password: confirm }),
     })
     if (response.ok) {
-      navigate('/dashboard')
+      navigate('/feed')
     } else {
       const data = await response.json().catch(() => ({}))
       alert(data.detail || 'Registration failed')

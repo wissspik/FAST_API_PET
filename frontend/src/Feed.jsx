@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import avatar from './assets/react.svg'
 import './Feed.css'
 import {
@@ -17,6 +19,37 @@ import {
 } from './icons.jsx'
 
 function Feed() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const res = await fetch('http://localhost:8000/protected', {
+        credentials: 'include',
+      })
+
+      if (res.ok) return
+
+      const refreshRes = await fetch('http://localhost:8000/refresh', {
+        credentials: 'include',
+      })
+
+      if (!refreshRes.ok) {
+        navigate('/login')
+        return
+      }
+
+      const verify = await fetch('http://localhost:8000/protected', {
+        credentials: 'include',
+      })
+
+      if (!verify.ok) {
+        navigate('/login')
+      }
+    }
+
+    checkAuth()
+  }, [navigate])
+
   const menuItems = [
     { label: 'Профиль', Icon: ProfileIcon },
     { label: 'Лента', Icon: FeedIcon },
