@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import avatar from './assets/react.svg'
 import './Feed.css'
@@ -16,10 +16,14 @@ import {
   MarketIcon,
   FilesIcon,
   HelpIcon,
+  SettingsIcon,
+  LogoutIcon,
+  StatsIcon,
 } from './icons.jsx'
 
 function Feed() {
   const navigate = useNavigate()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -82,11 +86,27 @@ function Feed() {
       </aside>
       <main className="main-area">
         <header className="profile-header">
-          <div className="profile-block">
+          <div className="profile-block" onClick={() => setMenuOpen((v) => !v)}>
             <img src={avatar} alt="avatar" className="avatar" />
             <span className="name">Имя Пользователя</span>
             <span className="arrow">▼</span>
           </div>
+          {menuOpen && (
+            <div className="profile-menu">
+              <div className="profile-menu-item">
+                <SettingsIcon className="icon-svg" />
+                <span>Настройки</span>
+              </div>
+              <div className="profile-menu-item">
+                <LogoutIcon className="icon-svg" />
+                <span>Выход</span>
+              </div>
+              <div className="profile-menu-item">
+                <StatsIcon className="icon-svg" />
+                <span>Статистика</span>
+              </div>
+            </div>
+          )}
         </header>
         <section className="stories-placeholder" />
         <section className="feed-placeholder">
