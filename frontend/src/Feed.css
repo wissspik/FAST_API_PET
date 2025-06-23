@@ -54,12 +54,14 @@
 .profile-header {
   display: flex;
   justify-content: flex-end;
+  position: relative;
 }
 
 .profile-block {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  cursor: pointer;
 }
 
 .avatar {
@@ -87,6 +89,33 @@
   border: 1px dashed #555;
   border-radius: 8px;
   background: #1e1e1e;
+}
+
+.profile-menu {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background: #1e1e1e;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 150px;
+}
+
+.profile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.profile-menu-item:hover {
+  background: #2c2c2c;
 }
 
 @media (max-width: 700px) {
