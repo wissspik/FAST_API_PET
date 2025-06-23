@@ -15,6 +15,7 @@ function Login() {
 
       if (res.ok) {
         navigate('/feed')
+
         return
       }
 
