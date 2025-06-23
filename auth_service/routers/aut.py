@@ -1,14 +1,15 @@
 from fastapi.params import Depends
-
+import time
 from auth_service.database.redis import redis_client
 
 from fastapi.responses import JSONResponse
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status, HTTPException,Response
 
 from auth_service.shapes.shapes import Registration,Authorization
 from auth_service.database.base import SessionDep
 
-from auth_service.utils.JWT import create_access_token, get_current_user, create_refresh_token,get_refresh_jti,get_access_jti
+from auth_service.utils.JWT import create_access_token, create_refresh_token, get_refresh_jti, \
+get_access_token,get_access_w_refresh
 from auth_service.utils.password_val_hash import check_password, check_login
 from auth_service.utils.sql_request import get_user_login_password,get_user_login,create_user
 from dotenv import load_dotenv
@@ -114,21 +115,35 @@ async def entrance(data:Authorization,session:SessionDep):
             content={"detail": "Неверный логин или пароль"}
     )
 @app.get("/protected")
-async def protect(current_user = Depends(get_current_user)):
+async def protect(access_token = Depends(get_access_token)):
     """
     Проверяет аутентификацию пользователя через access_token из куки.
     Если токен валидный - возвращает информацию о пользователе, иначе 401.
     """
     return JSONResponse(
         status_code=status.HTTP_200_OK,
-        content={"message": "Пользователь аутентифицирован", "user_id": current_user}
+        content={"message": "Пользователь аутентифицирован", "user_id": access_token['user_id']}
     )
+
 @app.get("/refresh")
-async def refresh_token(Cookies:str = Depends(get_refresh_jti)):
+async def refresh_token(Cookies:str = Depends(get_access_w_refresh)):
     """
     Обновляет access_token используя refresh_token из куки.
     Если refresh_token валидный - возвращает новый access_token, иначе 401.
     """
     return Cookies
+@app.post("logout")
+async def logout(response:Response,Cookie_refresh:str = Depends(get_refresh_jti),Cookie_access: str = Depends(get_access_token)):
+    # удаляем jti рефреша из редис
+    redis_client.delete(get_refresh_jti)
 
+    jti = Cookie_access['jti']
+    exp = Cookie_access['exp']
 
+    ttl = int(exp - time.time())
+    if ttl > 0:
+        redis_client.set(f"bl{jti}",ttl,1)
+    response.delete_cookie("access_token", path="/")
+    response.delete_cookie("refresh_token", path="/")
+
+    return {"detail": "Logged out successfully"}

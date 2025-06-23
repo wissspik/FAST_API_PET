@@ -63,7 +63,7 @@ def create_refresh_token(user_id:int) -> str:
     return token
 
 
-async def get_current_user(access_token: str = Cookie(None, alias="access_token")):
+async def get_access_token(access_token: str = Cookie(None, alias="access_token")):
     if not access_token:
         raise HTTPException(status_code=401, detail="Token is missing")
 
@@ -97,21 +97,15 @@ async def get_current_user(access_token: str = Cookie(None, alias="access_token"
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token missing subject",
         )
+    exp = payload.get("exp")
+    if exp is None:
+        raise HTTPException(
+            status_code=401, detail="Token missing jti"
+        )
     # Возвращаем user_id из токена
-    return int(user_id)
+    return {'user_id':int(user_id),'jti':jti,'exp':exp}
 
-async def get_access_jti(access_token: str = Cookie(None,alias="access_token")) -> str:
-    if not access_token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="Нет access_token в куки")
-    payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
-    jti = payload.get("jti")
-    if not jti:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="В access-токене нет jti")
-    return jti
 async def get_refresh_jti(refresh_token: str = Cookie(None,alias="refresh_token")) -> str:
-    print(refresh_token)
     if not refresh_token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Нет refresh_token")
@@ -153,7 +147,54 @@ async def get_refresh_jti(refresh_token: str = Cookie(None,alias="refresh_token"
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Срок жизни refresh токена истёк"
         )
+    return jti
+async def get_access_w_refresh(refresh_token: str = Cookie(None,alias="refresh_token")):
+    if not refresh_token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Нет refresh_token")
+    try:
+        payload = jwt.decode(
+            refresh_token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM])
+    except ExpiredSignatureError:
+        # Токен просрочен
+        raise HTTPException(status_code=401, detail="Refresh-токен истёк")
+    except ImmatureSignatureError:
+        # Токен активируется позже, чем сейчас
+        raise HTTPException(status_code=401, detail="Токен ещё не действителен")
+    except InvalidIssuedAtError:
+        # Неверное поле iat
+        raise HTTPException(status_code=400, detail="Некорректное время выпуска токена")
+    except InvalidSignatureError:
+        # Подпись не совпадает
+        raise HTTPException(status_code=400, detail="Неверная подпись токена")
+    except DecodeError:
+        # Ошибка разбора (например, невалидная структура)
+        raise HTTPException(status_code=400, detail="Не удалось декодировать токен")
+    except MissingRequiredClaimError as e:
+        # Отсутствует обязательное поле (например, exp, iat, sub и т.п.)
+        raise HTTPException(status_code=400, detail=f"Отсутствует обязательное поле: {e.claim}")
+    except InvalidAlgorithmError:
+        # Если передан неподдерживаемый алгоритм
+        raise HTTPException(status_code=400, detail="Неверный алгоритм токена")
+    except InvalidTokenError:
+        # Любая другая ошибка проверки токена
+        raise HTTPException(status_code=400, detail="Неверный формат или подпись токена")
+    jti = payload.get("jti")
+    if not jti:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="В access-токене нет jti")
+    if not redis_client.exists(jti):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Срок жизни refresh токена истёк"
+    )
     user_id = payload.get("sub")
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Неверный Access токен")
     access_token = create_access_token(user_id)
     response = JSONResponse({"message": "Успешный логин"})
     response.set_cookie(
@@ -162,6 +203,6 @@ async def get_refresh_jti(refresh_token: str = Cookie(None,alias="refresh_token"
         httponly=True,
         secure=True,
         samesite="strict",
-        max_age=int(ACCESS_TOKEN_EXPIRE_MINUTES) ,
+        max_age=int(ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     return response
