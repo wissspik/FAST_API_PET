@@ -8,3 +8,14 @@ class Registration(BaseModel):
 class Authorization(BaseModel):
     login : str
     password : str
+
+class ChangePassword(BaseModel):
+    id : int
+    password_old : str
+    password_new : str
+
+class DeleteAccount(BaseModel):
+    id : str
+
+class ChangeLogin(BaseModel):
+    id : int

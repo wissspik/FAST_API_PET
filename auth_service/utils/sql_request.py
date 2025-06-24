@@ -1,6 +1,7 @@
 from auth_service.database.base import SessionDep
+from fastapi.responses import JSONResponse
 from auth_service.database.models import User
-from sqlalchemy import select
+from sqlalchemy import select,update
 from auth_service.utils.password_val_hash import hash_password,verify_password
 
 async def get_user_id(session:SessionDep,id : str) -> bool:
@@ -33,3 +34,40 @@ async def create_user(session:SessionDep,login:str,password:str) -> User:
     return new_user
 async def safe_person(session:SessionDep) -> User:
     return True
+
+async def password_put(session : SessionDep,user_id : int,password_old : str,password_new : str) -> bool:
+    user = get_user_login(session,str(user_id)) #
+    if verify_password(password_old, user.password):
+        stml = (
+            update(User)
+            .where(User.id == user_id)
+            .values(password=password_new)
+            .returning(User)
+            .execution_options(synchronize_session="fetch")
+    )
+    result = await session.execute(stml)
+    user = result.scalar_one_or_none()
+    if user is not None:
+        return  True
+    else:
+        return False
+
+async def password_put(session : SessionDep,user_id : int) -> bool:
+    user = get_user_login(session,str(user_id))
+    if user:
+        stml = (
+            update(User)
+            .where(User.id == user_id)
+            .values(id=user_id)
+            .returning(User)
+            .execution_options(synchronize_session="fetch")
+    )
+    result = await session.execute(stml)
+    user = result.scalar_one_or_none()
+    if user is not None:
+        return  True
+    else:
+        return False
+
+
+

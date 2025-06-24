@@ -16,6 +16,7 @@ async def existing_user(session: SessionDep):
         login="TestUsers",
         password_hash=hash_password("QWER!10ww")
     )
+
     session.add(user)
     await session.commit()
     return user
