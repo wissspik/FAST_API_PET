@@ -17,6 +17,3 @@ before_script:
 test:
   stage: test
   script:
-    # запускается тесты
-
-  # можно сохранить отчёты в файлы
