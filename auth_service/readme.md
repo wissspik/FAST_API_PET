@@ -28,7 +28,7 @@
 
 ## Предусловия 
 
-На машине нужно иметь,чтобы запустить проект:
+Чтобы запустить проект,на машине нужно иметь:
 - Docker
 - Docker-compose
 - Доступ к репозиторию с секретными переменными 
@@ -45,8 +45,8 @@
 2. Запустить backend and frontend:
    ```bash
    docker-compose -f docker-compose.auth-service.yml up --build
+   cd ..
    cd frontend
    npm run dev
-3. Запуск тестов
-
+   ```
    
