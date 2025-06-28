@@ -10,12 +10,15 @@ class Authorization(BaseModel):
     password : str
 
 class ChangePassword(BaseModel):
-    id : int
+    login : int
     password_old : str
     password_new : str
 
 class DeleteAccount(BaseModel):
-    id : str
+    login : int
 
 class ChangeLogin(BaseModel):
-    id : int
+    old_login : str
+    new_login : str
+
+

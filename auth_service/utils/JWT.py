@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta, timezone
 import os
 import jwt
+from pygments.lexer import default
+
+from auth_service.utils.sql_request import add_jti_redis
 from jwt import (
     ExpiredSignatureError,
     ImmatureSignatureError,
@@ -38,7 +41,6 @@ def create_access_token(user_id : int) -> str:
         "exp": expire,
         "typ": "access",
     }
-
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
     return token
 
@@ -58,7 +60,7 @@ def create_refresh_token(user_id:int) -> str:
 
     expire_seconds = int(REFRESH_TOKEN_EXPIRE_DAYS) * 86400
 
-    redis_client.set(jti,token,ex = expire_seconds)
+    add_jti_redis(jti,token,expire_seconds)
 
     return token
 
@@ -204,5 +206,23 @@ async def get_access_w_refresh(refresh_token: str = Cookie(None,alias="refresh_t
         secure=True,
         samesite="strict",
         max_age=int(ACCESS_TOKEN_EXPIRE_MINUTES),
+    )
+    return response
+async def create_cookie_file(response : dict,access_token : str,refresh_token : str):
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        max_age=int(ACCESS_TOKEN_EXPIRE_MINUTES),
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        max_age=int(REFRESH_TOKEN_EXPIRE_DAYS) * 86400,
     )
     return response

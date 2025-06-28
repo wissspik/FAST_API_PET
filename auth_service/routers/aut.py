@@ -9,9 +9,9 @@ from auth_service.shapes.shapes import Registration,Authorization
 from auth_service.database.base import SessionDep
 
 from auth_service.utils.JWT import create_access_token, create_refresh_token, get_refresh_jti, \
-get_access_token,get_access_w_refresh
+get_access_token,get_access_w_refresh,create_cookie_file
 from auth_service.utils.password_val_hash import check_password, check_login
-from auth_service.utils.sql_request import get_user_login_password,get_user_login,create_user
+from auth_service.utils.sql_request import get_user_login_password,get_user_login,create_user,add_jti_redis,delete_redis
 from dotenv import load_dotenv
 import os
 
@@ -59,23 +59,7 @@ async def registration(data: Registration,session:SessionDep):
         refresh_token =  create_refresh_token(new_user.id)
 
         response = JSONResponse({"message":"Успешный логин"})
-        response.set_cookie(
-            key = "access_token",
-            value=access_token,
-            httponly=True,
-            secure=True,
-            samesite="strict",
-            max_age=int(ACCESS_TOKEN_EXPIRE_MINUTES) * 60,
-        )
-        response.set_cookie(
-            key = "refresh_token",
-            value=refresh_token,
-            httponly=True,
-            secure=True,
-            samesite="strict",
-            max_age=int(REFRESH_TOKEN_EXPIRE_DAYS) * 86400,
-        )
-        return response
+        return create_cookie_file(response,access_token,refresh_token)
     else:
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
@@ -92,23 +76,8 @@ async def entrance(data:Authorization,session:SessionDep):
         refresh_token =  create_refresh_token(found_user.id)
 
         response = JSONResponse({"message": "Успешный логин"})
-        response.set_cookie(
-            key="access_token",
-            value=access_token,
-            httponly=True,
-            secure=True,
-            samesite="strict",
-            max_age=int(ACCESS_TOKEN_EXPIRE_MINUTES),
-        )
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,
-            secure=True,
-            samesite="strict",
-            max_age=int(REFRESH_TOKEN_EXPIRE_DAYS) * 86400,
-        )
-        return response
+
+        return create_cookie_file(response,access_token,refresh_token)
     else:
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
@@ -132,17 +101,17 @@ async def refresh_token(Cookies:str = Depends(get_access_w_refresh)):
     Если refresh_token валидный - возвращает новый access_token, иначе 401.
     """
     return Cookies
+
 @app.post("/logout")
 async def logout(response:Response,Cookie_refresh:str = Depends(get_refresh_jti),Cookie_access: str = Depends(get_access_token)):
-    # удаляем jti рефреша из редис
-    redis_client.delete(Cookie_refresh)
+    delete_redis(Cookie_refresh)
 
     jti = Cookie_access['jti']
     exp = Cookie_access['exp']
 
     ttl = int(exp - time.time())
     if ttl > 0:
-        redis_client.set(f"bl:{jti}",ttl,1)
+        add_jti_redis(f"bl:{jti}", "1", ttl)
     response.delete_cookie("access_token", path="/")
     response.delete_cookie("refresh_token", path="/")
 
