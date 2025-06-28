@@ -5,6 +5,7 @@ import App from './App.jsx'
 import Login from './Login.jsx'
 import Registration from './Registration.jsx'
 import Feed from './Feed.jsx'
+import Profile from './Profile.jsx'
 import './index.css'
 
 createRoot(document.getElementById('root')).render(
@@ -15,6 +16,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Registration />} />
         <Route path="/feed" element={<Feed />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

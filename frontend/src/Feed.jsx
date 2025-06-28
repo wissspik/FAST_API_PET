@@ -63,7 +63,7 @@ function Feed() {
   }
 
   const menuItems = [
-    { label: 'Профиль', Icon: ProfileIcon },
+    { label: 'Профиль', Icon: ProfileIcon, onClick: () => navigate('/profile') },
     { label: 'Лента', Icon: FeedIcon },
     { label: 'Мессенджер', Icon: MessageIcon },
     { label: 'Звонки', Icon: PhoneIcon },
@@ -84,7 +84,11 @@ function Feed() {
         <nav>
           <ul className="menu">
             {menuItems.map((item) => (
-              <li key={item.label} className="menu-item">
+              <li
+                key={item.label}
+                className="menu-item"
+                onClick={item.onClick}
+              >
                 <item.Icon className="icon-svg" />
                 <span className="label">{item.label}</span>
               </li>
