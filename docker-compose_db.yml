@@ -5,29 +5,15 @@ services:
     environment:
       POSTGRES_USER: appuser
       POSTGRES_PASSWORD: strongpass
-      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-
-  auth_db:
-    depends_on:
-      - postgres
-    environment:
-      DB_HOST: postgres
-      DB_NAME: auth_db
-      DB_USER: appuser
-      DB_PASS: strongpass
-
-  profile_db:
-    depends_on:
-      - postgres
-    environment:
-      DB_HOST: postgres
-      DB_NAME: profile_db
-      DB_USER: appuser
-      DB_PASS: strongpass
-
+    networks:
+      - common_net
 volumes:
   pgdata:
+
+networks:
+  common_net:
+    external: true
