@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Профиль</title>
+<style>
+  body {
+    background: #1e1e1e;
+    color: #eee;
+    font-family: sans-serif;
+    margin: 0;
+  }
+  .profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #2a2a2a;
+  }
+  .profile-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .name {
+    font-size: 1.2rem;
+    margin: 0;
+  }
+  .cat-icon {
+    color: #3fa24b;
+  }
+  .location {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #bbb;
+  }
+  .location svg {
+    width: 14px;
+    height: 14px;
+    margin-right: 0.25rem;
+    fill: #bbb;
+  }
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-primary {
+    background: #3a7bfd;
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background: #2f6de0;
+  }
+  .btn-secondary {
+    background: #444;
+    color: #eee;
+  }
+  .btn-secondary:hover {
+    background: #555;
+  }
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  .modal-overlay.show {
+    display: flex;
+  }
+  .modal {
+    background: #2a2a2a;
+    padding: 1rem 1.5rem;
+    border-radius: 6px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    transform: scale(0.9);
+    opacity: 0;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  .modal-overlay.show .modal {
+    transform: scale(1);
+    opacity: 1;
+  }
+  .close-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+    background: none;
+    border: none;
+    color: #eee;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  textarea, select, input[type="text"], input[type="number"], button, select[multiple] {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #555;
+    background: #1e1e1e;
+    color: #eee;
+  }
+  fieldset {
+    border: 1px solid #444;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  legend {
+    padding: 0 0.5rem;
+    color: #ccc;
+  }
+  .family-btns button {
+    margin-bottom: 0.3rem;
+    width: 100%;
+    background: #444;
+    color: #eee;
+  }
+  .family-btns button:hover {
+    background: #555;
+  }
+</style>
+</head>
+<body>
+  <header class="profile-header">
+    <div class="profile-info">
+      <img src="https://via.placeholder.com/80" alt="avatar" class="avatar">
+      <div>
+        <p class="name">Руслан Насрутдинов <span class="cat-icon">🐱</span></p>
+        <div class="location">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
+          </svg>
+          <span>Санкт-Петербург</span>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" id="editBtn">Редактировать профиль</button>
+      <button class="btn btn-secondary">Ещё ▼</button>
+    </div>
+  </header>
+
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <button class="close-btn" id="closeBtn">×</button>
+      <h2>Редактировать профиль</h2>
+      <form id="editForm">
+        <label>Краткая информация
+          <textarea name="info">кр</textarea>
+        </label>
+        <label>Семейное положение
+          <select name="status">
+            <option>Не выбрано</option>
+            <option>Не женат</option>
+            <option>Женат</option>
+          </select>
+        </label>
+        <label>Родной город
+          <input type="text" name="city" value="Москва">
+        </label>
+        <label>Владение языками
+          <select name="langs" multiple size="3">
+            <option selected>Русский</option>
+            <option>English</option>
+            <option>Deutsch</option>
+          </select>
+        </label>
+        <fieldset class="family-btns">
+          <legend>Семья</legend>
+          <button type="button">Дедушки, бабушки: Добавить</button>
+          <button type="button">Родители: Добавить</button>
+          <button type="button">Братья, сёстры: Добавить</button>
+          <button type="button">Дети: Добавить</button>
+          <button type="button">Внуки: Добавить</button>
+        </fieldset>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </form>
+    </div>
+  </div>
+
+<script>
+  const editBtn = document.getElementById('editBtn');
+  const modal = document.getElementById('modal');
+  const closeBtn = document.getElementById('closeBtn');
+  const form = document.getElementById('editForm');
+
+  editBtn.addEventListener('click', () => {
+    modal.classList.add('show');
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modal.classList.remove('show');
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.remove('show');
+    }
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const values = Object.fromEntries(data.entries());
+    console.log(values);
+    modal.classList.remove('show');
+  });
+</script>
+</body>
+</html>
