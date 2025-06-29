@@ -1,7 +1,17 @@
 from fastapi import FastAPI
-
+from profile.routers.create_data import app as create_data
+from profile.routers.db import app as db
+from starlette.middleware.cors import CORSMiddleware
 app = FastAPI()
+app.include_router(create_data)
+app.include_router(db)
 
-@app.get("/get")
-async def get():
-    return {"hello": "world"}
+origins = [
+    "http://localhost:3000",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+)

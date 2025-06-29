@@ -1,5 +1,5 @@
 from fastapi import APIRouter,UploadFile,File,HTTPException
-from datetime import datetime
+from datetime import datetime, timezone
 from profile.shapes.shapes import FileUpload
 from profile.utils.sql_request import get_user_id
 from profile.database.base import SessionDep
@@ -21,6 +21,10 @@ async def upload_file(session:SessionDep,data:FileUpload,file : UploadFile = Fil
     contents = await file.read()
     file_size = len(contents)
 
-    new_photo = await create_photo(contents,file_name,file.content_type,datatime.now(),)
+    file_name = file.filename
 
+    uploaded_at = datetime.now(timezone.utc)
 
+    new_photo = await create_photo(contents,file_name,file.content_type,uploaded_at,data.user_id,file_size)
+
+    return {"status":"ok"}

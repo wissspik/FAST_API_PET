@@ -6,7 +6,9 @@ COPY profile/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY /profile ./profile
+COPY profile/alembic.ini ./profile/
 
-CMD ["uvicorn", "profile.main:app", "--reload", "--host", "0.0.0.0", "--port", "8001"]
+COPY profile ./profile
+
+CMD ["uvicorn", "profile.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
 

@@ -6,7 +6,7 @@ COPY auth_service/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY alembic.ini .
+COPY auth_service/alembic.ini ./auth_service/
 
 COPY auth_service ./auth_service
 
