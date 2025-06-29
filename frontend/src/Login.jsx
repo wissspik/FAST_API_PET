@@ -55,7 +55,7 @@ function Login() {
   const togglePassword = () => setShowPassword((prev) => !prev)
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[#121212] login-container">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#1E1E1E] login-container">
       <div className="w-full max-w-md">
         <div className="bg-gray-800 rounded-xl shadow-xl overflow-hidden">
           <div className="bg-gray-900 px-6 py-8 text-center">
