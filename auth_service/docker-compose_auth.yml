@@ -15,6 +15,7 @@ services:
     networks:
       - common_net
 
+
   redis:
     image: redis:latest
     container_name: redis-server

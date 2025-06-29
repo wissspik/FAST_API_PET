@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 REFRESH_TOKEN_EXPIRE_DAYS = os.getenv("REFRESH_TOKEN_EXPIRE_DAYS")
 
-def create_access_token(user_id : int) -> str:
+async def create_access_token(user_id : int) -> str:
     jti = str(uuid4())
     now = datetime.now(timezone.utc)
     expire = now + timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
@@ -44,7 +44,7 @@ def create_access_token(user_id : int) -> str:
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
     return token
 
-def create_refresh_token(user_id:int) -> str:
+async def create_refresh_token(user_id:int) -> str:
     jti = str(uuid4())
     now = datetime.now(timezone.utc)
     expire = now + timedelta(days=int(REFRESH_TOKEN_EXPIRE_DAYS))

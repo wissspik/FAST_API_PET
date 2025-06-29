@@ -10,7 +10,7 @@ class Authorization(BaseModel):
     password : str
 
 class ChangePassword(BaseModel):
-    login : int
+    login : str
     password_old : str
     password_new : str
 

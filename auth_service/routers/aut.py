@@ -71,13 +71,13 @@ async def entrance(data:Authorization,session:SessionDep):
     found_user = await get_user_login_password(session,data.login,data.password)
     if found_user:
 
-        access_token =  create_access_token(found_user.id)
+        access_token =  await create_access_token(found_user.id)
 
-        refresh_token =  create_refresh_token(found_user.id)
+        refresh_token = await create_refresh_token(found_user.id)
 
         response = JSONResponse({"message": "Успешный логин"})
 
-        return create_cookie_file(response,access_token,refresh_token)
+        return await create_cookie_file(response,access_token,refresh_token)
     else:
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
