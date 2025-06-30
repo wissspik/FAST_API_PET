@@ -1,17 +1,18 @@
-from fastapi.params import Depends
 import time
-from auth_service.database.redis import redis_client
 
 from fastapi.responses import JSONResponse
 from fastapi import APIRouter, status, HTTPException,Response
+from fastapi.params import Depends
 
+from auth_service.database.redis import redis_client
 from auth_service.shapes.shapes import Registration,Authorization
 from auth_service.database.base import SessionDep
-
 from auth_service.utils.JWT import create_access_token, create_refresh_token, get_refresh_jti, \
 get_access_token,get_access_w_refresh,create_cookie_file
 from auth_service.utils.password_val_hash import check_password, check_login
 from auth_service.utils.sql_request import get_user_login_password,get_user_login,create_user,add_jti_redis,delete_redis
+
+
 from dotenv import load_dotenv
 import os
 
@@ -58,8 +59,9 @@ async def registration(data: Registration,session:SessionDep):
         # создаем refresh токен
         refresh_token =  create_refresh_token(new_user.id)
 
-        response = JSONResponse({"message":"Успешный логин"})
-        return create_cookie_file(response,access_token,refresh_token)
+        response = JSONResponse({"message":"Успешная регистрация"})
+
+        return await create_cookie_file(response,access_token,refresh_token)
     else:
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,

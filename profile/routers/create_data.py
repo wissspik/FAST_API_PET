@@ -8,9 +8,9 @@ from profile.utils.sql_request import create_photo
 app = APIRouter(prefix='/profile', tags=['profile'])
 
 
-@app.post('/profile/data')
-async def upload_file(session:SessionDep,data:FileUpload,file : UploadFile = File(...)):
-    check_user = await  get_user_id(session,data.user_id)
+@app.post('/data')
+async def upload_file(session:SessionDep,user_id : int,file : UploadFile = File(...)):
+    check_user = await  get_user_id(session,user_id)
     if not check_user:
         raise HTTPException(status_code=400, detail="Данного пользователя не существует")
 
@@ -25,6 +25,6 @@ async def upload_file(session:SessionDep,data:FileUpload,file : UploadFile = Fil
 
     uploaded_at = datetime.now(timezone.utc)
 
-    new_photo = await create_photo(contents,file_name,file.content_type,uploaded_at,data.user_id,file_size)
+    new_photo = await create_photo(contents,file_name,file.content_type,uploaded_at,user_id,file_size)
 
     return {"status":"ok"}

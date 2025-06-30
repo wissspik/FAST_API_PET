@@ -1,5 +1,6 @@
 services:
   backend:
+    container_name: service_profile
     build:
       context: .
       dockerfile: profile/Dockerfile
@@ -9,6 +10,8 @@ services:
       - postgres
     ports:
       - "8001:8000"
+    networks:
+      - common_net
 networks:
   common_net:
     external: true

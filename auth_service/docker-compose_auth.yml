@@ -3,6 +3,7 @@ volumes:
 
 services:
   backend:
+    container_name: service_auth
     build:
       context: .
       dockerfile: auth_service/Dockerfile
