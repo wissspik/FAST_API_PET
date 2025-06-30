@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Profile.css'
 import {
@@ -14,6 +14,7 @@ import {
 function Profile() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const fileInputRef = useRef(null)
 
   const menuItems = [
     { label: 'Профиль', Icon: ProfileIcon, onClick: () => navigate('/profile') },
@@ -21,6 +22,27 @@ function Profile() {
     { label: 'Мессенджер', Icon: MessageIcon },
     { label: 'Помощь', Icon: HelpIcon },
   ]
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('data', JSON.stringify({ user_id: 1 }))
+    try {
+      await fetch('http://localhost:8001/profile/data', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   const handleLogout = async () => {
     await fetch('http://localhost:8000/logout', {
@@ -37,13 +59,14 @@ function Profile() {
           <h1 className="text-xl font-bold text-center">Graut :)</h1>
         </div>
         <nav className="mt-6 space-y-1">
-          {menuItems.map(({ label, Icon, onClick }) => (
+          {/* eslint-disable-next-line no-unused-vars */}
+          {menuItems.map(({ label, Icon: ItemIcon, onClick }) => (
             <div
               key={label}
               className="flex items-center px-6 py-3 cursor-pointer hover:bg-white/5 transition"
               onClick={onClick}
             >
-              <Icon className="w-6 mr-3" />
+              <ItemIcon className="w-6 mr-3" />
               <span className="menu-text">{label}</span>
             </div>
           ))}
@@ -59,7 +82,14 @@ function Profile() {
               <div className="photo-placeholder">
                 <i className="fas fa-user-circle" />
               </div>
-              <button className="upload-btn">
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              <button className="upload-btn" onClick={handleUploadClick}>
                 <i className="fas fa-camera" /> Загрузить фото
               </button>
             </div>

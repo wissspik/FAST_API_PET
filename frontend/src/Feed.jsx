@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import avatar from './assets/react.svg'
 import {
   ProfileIcon,
   FeedIcon,
@@ -75,13 +74,14 @@ function Feed() {
           <h1 className="text-xl font-bold text-center">Graut :)</h1>
         </div>
         <nav className="mt-6 space-y-1">
-          {menuItems.map(({ label, Icon, onClick }) => (
+          {/* eslint-disable-next-line no-unused-vars */}
+          {menuItems.map(({ label, Icon: MenuIcon, onClick }) => (
             <div
               key={label}
               className="menu-item flex items-center px-6 py-3 cursor-pointer hover:bg-white/5 transition"
               onClick={onClick}
             >
-              <Icon className="w-6 mr-3" />
+              <MenuIcon className="w-6 mr-3" />
               <span className="menu-text">{label}</span>
             </div>
           ))}
