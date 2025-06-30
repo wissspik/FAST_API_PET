@@ -12,6 +12,7 @@ get_access_token,get_access_w_refresh,create_cookie_file
 from auth_service.utils.password_val_hash import check_password, check_login
 from auth_service.utils.sql_request import get_user_login_password,get_user_login,create_user,add_jti_redis,delete_redis
 
+from auth_service.utils.kafka import logger
 
 from dotenv import load_dotenv
 import os
@@ -60,6 +61,8 @@ async def registration(data: Registration,session:SessionDep):
         refresh_token =  create_refresh_token(new_user.id)
 
         response = JSONResponse({"message":"Успешная регистрация"})
+
+        logger.info(f"A user has been created with the id: {new_user.id} and login: {new_user.login}")
 
         return await create_cookie_file(response,access_token,refresh_token)
     else:
