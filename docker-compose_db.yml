@@ -23,6 +23,8 @@ services:
 
   kafka:
     image : bitnami/kafka:latest
+    volumes:
+      - ./app_config.yaml:/app/config/app_config.yaml:ro  # ro - только чтение файла
     container_name: kafka
     ports:
       - "9092:9092"
@@ -34,6 +36,7 @@ services:
       - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
       - KAFKA_ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE="false"
 
 volumes:
   pgdata:

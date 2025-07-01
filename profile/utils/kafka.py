@@ -25,7 +25,7 @@ logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
 logger.addHandler(handler)
 
-async def consume_loop(session : SessionDep,consumer : AIOKafkaConsumer):
+async def consume_loop(consumer : AIOKafkaConsumer):
     """
 
 
@@ -33,8 +33,8 @@ async def consume_loop(session : SessionDep,consumer : AIOKafkaConsumer):
     async for msg in consumer:
         try:
             payload = json.loads(msg.value.decode("utf-8"))
-            if not get_user_id(payload['user_id']):
-                await create_user_id(session,payload['user_id'],payload['login'])
+            if not await get_user_id(payload['user_id']):
+                await create_user_id(payload['user_id'],payload['login'])
             logger.info(f"Consumed message: {payload}")
         except json.JSONDecodeError:
             logger.error("Failed to decode message", exc_info=True)
