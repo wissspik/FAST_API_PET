@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from profile.routers.create_data import app as create_data
 from profile.routers.db import app as db
 from starlette.middleware.cors import CORSMiddleware
-from auth_service.utils.kafka import lifespan
+from profile.utils.kafka import lifespan
 
 
 app = FastAPI(lifespan = lifespan)

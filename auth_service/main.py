@@ -1,9 +1,11 @@
 from fastapi import FastAPI
+from auth_service.utils.kafka import lifespan
+
 from auth_service.routers.aut import app as auth
 from starlette.middleware.cors import CORSMiddleware
 from auth_service.routers.db import app as db
 from auth_service.routers.change_data import app as change_data
-app = FastAPI()
+app = FastAPI(lifespan = lifespan)
 
 origins = [
     "http://localhost:3000",

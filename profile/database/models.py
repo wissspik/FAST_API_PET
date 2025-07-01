@@ -8,12 +8,13 @@ class Base(DeclarativeBase):
 class Profile(Base):
     __tablename__ = 'profile'
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(unique=False, index=True, nullable=False)
-    surname: Mapped[str] = mapped_column(unique=False, index=True, nullable=False)
+    login: Mapped[str] = mapped_column(unique=False, index=True, nullable=False)
+    name: Mapped[str] = mapped_column(unique=False, index=True, nullable=True)
+    surname: Mapped[str] = mapped_column(unique=False, index=True, nullable=True)
     patronymic: Mapped[str] = mapped_column(unique=False, index=True, nullable=True)
     gender: Mapped[str] = mapped_column(
         PGEnum('male', 'female', 'other', name='gender_enum'),
-        nullable=False
+        nullable=True
     )
     city: Mapped[str] = mapped_column(unique=False, index=True, nullable=True)
     age: Mapped[int] = mapped_column(unique=False, index=True, nullable=True)

@@ -9,6 +9,15 @@ async def get_user_id(session:SessionDep,user_id:int) -> bool:
     found_user = result.scalar_one_or_none()
     return found_user
 
+async def create_user_id(session:SessionDep,user_id : int,login : str):
+    stml = Profile(id = user_id,login = login)
+    result = await session.execute(stml)
+    user = result.scalar_one_or_none()
+    if not user:
+        return False
+    else:
+        return True
+
 async def create_photo(session:SessionDep,file : bytes,file_name : str,mime_type : str,
                        uploaded_at,user_id : int,file_size : int) -> None:
     new_photo = Profile(id = user_id,

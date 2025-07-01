@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 import asyncio
-from auth_service.main import app
 from fastapi import FastAPI
 import json
 import logging
@@ -15,7 +14,7 @@ load_dotenv()
 KAFKA_BOOTSTRAP = os.getenv('KAFKA_BOOTSTRAP')
 LOGS_TOPIC = os.getenv('LOGS_TOPIC')
 
-logger = logging.getLogger("kafka-logger") # создаем логгер kafka-logger
+logger = logging.getLogger("kafka-producer") # создаем логгер kafka-logger
 logger.setLevel(logging.INFO)
 
 
