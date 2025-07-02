@@ -22,7 +22,7 @@ services:
       - .env
     volumes:
       - kfdata:/var/lib/kafka/data
-      - ./init-topics.sh:/etc/confluent/docker/init-topics.sh:ro
+#      - /init-topics.sh:/etc/confluent/docker/init-topics.sh:ro
     environment:
         - KAFKA_NODE_ID
         - KAFKA_PROCESS_ROLES
@@ -37,11 +37,27 @@ services:
         - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
         - CLUSTER_ID
         - KAFKA_AUTO_CREATE_TOPICS_ENABLE
-        - KAFKA_CREATE_TOPICS
     networks:
       - common_net
-
-
+  topic-init:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - kafka
+    entrypoint:
+      - sh
+      - -c
+      - |
+        cub kafka-ready -b kafka:9092 1 20 &&
+        kafka-topics --bootstrap-server kafka:9092 \
+          --create \
+          --topic profile_registration \
+          --partitions 1 \
+          --replication-factor 1 \
+          --if-not-exists
+    environment:
+      BOOTSTRAP_SERVERS: "kafka:9092"
+    networks:
+      - common_net
 
 volumes:
   pgdata:
