@@ -23,20 +23,6 @@ services:
     volumes:
       - kfdata:/var/lib/kafka/data
 #      - /init-topics.sh:/etc/confluent/docker/init-topics.sh:ro
-    environment:
-        - KAFKA_NODE_ID
-        - KAFKA_PROCESS_ROLES
-        - KAFKA_CONTROLLER_QUORUM_VOTERS
-        - KAFKA_LISTENERS
-        - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
-        - KAFKA_INTER_BROKER_LISTENER_NAME
-        - KAFKA_CONTROLLER_LISTENER_NAMES
-        - KAFKA_ADVERTISED_LISTENERS
-        - KAFKA_LOG_DIRS
-        - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
-        - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
-        - CLUSTER_ID
-        - KAFKA_AUTO_CREATE_TOPICS_ENABLE
     networks:
       - common_net
   topic-init:
@@ -58,6 +44,11 @@ services:
       BOOTSTRAP_SERVERS: "kafka:9092"
     networks:
       - common_net
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "echo > /dev/tcp/localhost/9092" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pgdata:

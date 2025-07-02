@@ -10,7 +10,10 @@ services:
     env_file:
       - auth_service/.env
     depends_on:
-      - postgres
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_started
     ports:
       - "8000:8000"
     networks:

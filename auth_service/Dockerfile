@@ -1,14 +1,17 @@
-FROM python:3.12-alpine
+FROM python:3.12-slim
 
 WORKDIR /app
 # пакеты для Aiokafka
-RUN apk add --no-cache \
-    git \
-    build-base \
-    python3-dev \
-    musl-dev
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      build-essential \
+      libffi-dev \
+      libssl-dev \
+      git \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade pip setuptools wheel
+RUN pip install --upgrade pip setuptools wheel \
+    && pip install Cython
 
 COPY auth_service/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt

@@ -50,7 +50,8 @@ async def lifespan(app : FastAPI):
     app.state.kafka_producer = AIOKafkaProducer(
         bootstrap_servers=KAFKA_BOOTSTRAP,
         acks="all",
-        retries=5
+        retry_backoff_ms=100,  # пауза между автоматическими переподключениями
+        request_timeout_ms=20000,  # сколько ждать ответа от брокера
     )
     await app.state.kafka_producer.start()
     kafka_handler = KafkaLogHandler(app.state.kafka_producer, LOGS_TOPIC)
