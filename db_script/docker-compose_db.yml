@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:15.4
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db_script:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - common_net
+  kafka:
+    image: 'confluentinc/cp-kafka:latest'
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    env_file:
+      - .env
+    volumes:
+      - kfdata:/var/lib/kafka/data
+      - ./init-topics.sh:/etc/confluent/docker/init-topics.sh:ro
+    environment:
+        - KAFKA_PROCESS_ROLES
+        - KAFKA_BROKER_ID
+        - KAFKA_CONTROLLER_QUORUM_VOTERS
+        - KAFKA_LISTENERS
+        - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+        - KAFKA_INTER_BROKER_LISTENER_NAME
+        - KAFKA_CONTROLLER_LISTENER_NAMES
+        - KAFKA_ADVERTISED_LISTENERS
+        - KAFKA_LOG_DIRS
+        - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+        - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+        - CLUSTER_ID
+        - KAFKA_AUTO_CREATE_TOPICS_ENABLE
+    networks:
+      - common_net
+
+volumes:
+  pgdata:
+  kfdata:
+
+networks:
+  common_net:
+    external: true
