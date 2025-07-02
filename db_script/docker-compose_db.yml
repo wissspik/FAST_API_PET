@@ -19,7 +19,7 @@ services:
     ports:
       - "9092:9092"
     env_file:
-      - .env
+      - db_script/.env
     volumes:
       - kfdata:/var/lib/kafka/data
 #      - /init-topics.sh:/etc/confluent/docker/init-topics.sh:ro

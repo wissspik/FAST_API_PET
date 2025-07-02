@@ -1,0 +1,4 @@
+docker-compose -f db_script/docker-compose_db.yml up --build
+docker-compose -f auth_service/docker-compose_auth.yml up --build
+docker-compose -f profile/docker-compose_profile.yml up --build
+
