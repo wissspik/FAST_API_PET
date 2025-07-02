@@ -37,9 +37,10 @@ services:
         - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
         - CLUSTER_ID
         - KAFKA_AUTO_CREATE_TOPICS_ENABLE
+        - KAFKA_CREATE_TOPICS
     networks:
       - common_net
-    entrypoint: ["bash", "-c", "/etc/confluent/docker/init-topics.sh"]
+
 
 
 volumes:
