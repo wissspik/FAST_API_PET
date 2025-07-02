@@ -25,7 +25,6 @@ services:
       - ./init-topics.sh:/etc/confluent/docker/init-topics.sh:ro
     environment:
         - KAFKA_PROCESS_ROLES
-        - KAFKA_BROKER_ID
         - KAFKA_CONTROLLER_QUORUM_VOTERS
         - KAFKA_LISTENERS
         - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
@@ -39,6 +38,8 @@ services:
         - KAFKA_AUTO_CREATE_TOPICS_ENABLE
     networks:
       - common_net
+    entrypoint: ["bash", "-c", "/etc/confluent/docker/init-topics.sh"]
+
 
 volumes:
   pgdata:
