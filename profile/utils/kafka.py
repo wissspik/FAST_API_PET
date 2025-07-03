@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from profile.utils.sql_request import get_user_id, create_user_id
 import asyncio
-from profile.main import app
 from fastapi import FastAPI
 import json
 import logging
@@ -27,14 +26,14 @@ logger.addHandler(handler)
 
 async def consume_loop(consumer : AIOKafkaConsumer):
     """
-
-
     """
     async for msg in consumer:
         try:
             payload = json.loads(msg.value.decode("utf-8"))
-            if not await get_user_id(payload['user_id']):
-                await create_user_id(payload['user_id'],payload['login'])
+            print(payload)
+            if not await get_user_id(payload["user_id"]):
+                created_profile = await create_user_id(payload["user_id"], payload["login"])
+                logger.info(f"Created profile: {created_profile.id}")
             logger.info(f"Consumed message: {payload}")
         except json.JSONDecodeError:
             logger.error("Failed to decode message", exc_info=True)
