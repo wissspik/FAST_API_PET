@@ -60,7 +60,7 @@ async def registration(data: Registration,session:SessionDep):
         # создаем refresh токен
         refresh_token =  create_refresh_token(new_user.id)
 
-        response = JSONResponse({"message":"Успешная регистрация"})
+        response = JSONResponse({})
 
         logger.info(f"A user has been created with the id: {new_user.id} and login: {new_user.login}")
 
@@ -121,3 +121,7 @@ async def logout(response:Response,Cookie_refresh:str = Depends(get_refresh_jti)
     response.delete_cookie("refresh_token", path="/")
 
     return {"detail": "Logged out successfully"}
+
+
+#сделать форму ввода данных
+#сделать api gateway
