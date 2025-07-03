@@ -27,4 +27,6 @@ async def upload_file(user_id : int,file : UploadFile = File(...)):
 
     new_photo = await create_photo(contents,file_name,file.content_type,uploaded_at,user_id,file_size)
 
+
+
     return {"status":"ok"}
