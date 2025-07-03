@@ -22,9 +22,13 @@ services:
       - db_script/.env
     volumes:
       - kfdata:/var/lib/kafka/data
-#      - /init-topics.sh:/etc/confluent/docker/init-topics.sh:ro
     networks:
       - common_net
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "echo > /dev/tcp/localhost/9092" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   topic-init:
     image: confluentinc/cp-kafka:latest
     depends_on:
