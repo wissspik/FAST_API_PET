@@ -2,7 +2,7 @@ volumes:
   redis-data:
 
 services:
-  backend:
+  service_auth:
     container_name: service_auth
     build:
       context: .
@@ -15,7 +15,7 @@ services:
       postgres:
         condition: service_started
     ports:
-      - "8000:8000"
+      - "8001:8000"
     networks:
       - common_net
   redis:

@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse,Response
+
 from dotenv import load_dotenv
+
 from auth_service.utils.JWT import create_access_token, create_refresh_token,create_cookie_file
 from auth_service.utils.sql_request import put_password,put_login,delete_user
 from auth_service.utils.password_val_hash import check_password
@@ -8,6 +10,7 @@ from auth_service.shapes.shapes import DeleteAccount,ChangePassword,ChangeLogin
 from auth_service.database.base import SessionDep
 
 load_dotenv()
+
 app = APIRouter(prefix="/profile")
 
 @app.put("/change_password")

@@ -1,5 +1,5 @@
 services:
-  backend:
+  service_profile:
     container_name: service_profile
     build:
       context: .
@@ -7,9 +7,12 @@ services:
     env_file:
       - profile/.env
     depends_on:
-      - postgres
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_started
     ports:
-      - "8001:8000"
+      - "8002:8000"
     networks:
       - common_net
 networks:
