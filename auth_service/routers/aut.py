@@ -62,8 +62,10 @@ async def registration(data: Registration,session:SessionDep):
 
         response = JSONResponse({})
 
-        logger.info(f"A user has been created with the id: {new_user.id} and login: {new_user.login}")
-
+        logger.info(
+            "A user has been created",
+            extra={"user_id": new_user.id, "login": new_user.login}
+        )
         return await create_cookie_file(response,access_token,refresh_token)
     else:
         return JSONResponse(

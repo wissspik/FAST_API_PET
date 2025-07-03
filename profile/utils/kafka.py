@@ -30,7 +30,6 @@ async def consume_loop(consumer : AIOKafkaConsumer):
     async for msg in consumer:
         try:
             payload = json.loads(msg.value.decode("utf-8"))
-            print(payload)
             if not await get_user_id(payload["user_id"]):
                 created_profile = await create_user_id(payload["user_id"], payload["login"])
                 logger.info(f"Created profile: {created_profile.id}")

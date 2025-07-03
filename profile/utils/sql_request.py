@@ -4,11 +4,12 @@ from sqlalchemy import select
 from profile.database.base import new_session
 
 
-async def get_user_id(session: SessionDep, user_id: int) -> bool:
-    stml = select(Profile).filter_by(id=user_id)
-    result = await session.execute(stml)
-    found_user = result.scalar_one_or_none()
-    return found_user
+async def get_user_id(user_id: int) -> bool:
+    async with new_session() as session:
+        stml = select(Profile).filter_by(id=user_id)
+        result = await session.execute(stml)
+        found_user = result.scalar_one_or_none()
+        return found_user
 
 
 # создавать автоматическое создание топиков

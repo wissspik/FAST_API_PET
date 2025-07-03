@@ -3,9 +3,6 @@ services:
     image: postgres:15.4
     container_name: postgres
     restart: always
-    environment:
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./db_script:/docker-entrypoint-initdb.d

@@ -9,8 +9,8 @@ app = APIRouter(prefix='/profile', tags=['profile'])
 
 
 @app.post('/data')
-async def upload_file(session:SessionDep,user_id : int,file : UploadFile = File(...)):
-    check_user = await  get_user_id(session,user_id)
+async def upload_file(user_id : int,file : UploadFile = File(...)):
+    check_user = await  get_user_id(user_id)
     if not check_user:
         raise HTTPException(status_code=400, detail="Данного пользователя не существует")
 
