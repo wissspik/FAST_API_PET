@@ -14,6 +14,7 @@ import {
 function Profile() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [showForm, setShowForm] = useState(false)
   const fileInputRef = useRef(null)
 
   const menuItems = [
@@ -125,7 +126,10 @@ function Profile() {
                   <span className="info-value">Мужской</span>
                 </div>
               </div>
-              <button className="edit-profile-btn">
+              <button
+                className="edit-profile-btn"
+                onClick={() => setShowForm(true)}
+              >
                 <i className="fas fa-edit" /> Заполнить профиль
               </button>
             </div>
@@ -176,6 +180,51 @@ function Profile() {
           </button>
         </div>
       </div>
+      {showForm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <button className="close-btn" onClick={() => setShowForm(false)}>
+              &times;
+            </button>
+            <form id="profileForm">
+              <div className="form-group">
+                <label htmlFor="username">Никнейм:</label>
+                <input type="text" id="username" name="username" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="firstName">Имя:</label>
+                <input type="text" id="firstName" name="firstName" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="lastName">Фамилия:</label>
+                <input type="text" id="lastName" name="lastName" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="middleName">Отчество:</label>
+                <input type="text" id="middleName" name="middleName" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="age">Возраст:</label>
+                <input type="number" id="age" name="age" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="city">Город:</label>
+                <input type="text" id="city" name="city" />
+              </div>
+              <div className="form-group">
+                <label>Пол:</label>
+                <div>
+                  <input type="radio" id="male" name="gender" value="Мужской" />
+                  <label htmlFor="male">Мужской</label>
+                  <input type="radio" id="female" name="gender" value="Женский" />
+                  <label htmlFor="female">Женский</label>
+                </div>
+              </div>
+              <button type="submit" className="save-btn">Сохранить</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
