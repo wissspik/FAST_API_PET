@@ -1,8 +1,8 @@
 from profile.database.base import SessionDep
-from profile.database.models import Profile
 from sqlalchemy import select
 from profile.database.base import new_session
-
+from profile.database.models import Profile
+from sqlalchemy import update
 
 async def get_user_id(user_id: int) -> bool:
     async with new_session() as session:
@@ -31,3 +31,24 @@ async def create_photo(
     )
     session.add(new_photo)
     await session.commit()
+
+async def put_data_profile(session : SessionDep,id : int,data : dict) -> bool:
+    user = await get_user_id(id)
+    stml = (
+        update(Profile)
+        .where(Profile.id == id)
+        .values(name = data['name'],
+                surname = data['surname'],
+                patronymic = data['patronymic'],
+                city = data['city'],
+                age = data['age'],
+                gender = data['gender'],)
+        .returning(Profile)
+        .execution_options(synchronize_session="fetch")
+    )
+    result = await session.execute(stml)
+    user = result.scalar_one_or_none()
+    if user is not None:
+        return  True
+    else:
+        return False
