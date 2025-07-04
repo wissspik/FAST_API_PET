@@ -15,12 +15,14 @@ function Profile() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
   const [showForm, setShowForm] = useState(false)
+
   const [name, setName] = useState('')
   const [surname, setSurname] = useState('')
   const [patronymic, setPatronymic] = useState('')
   const [age, setAge] = useState('')
   const [city, setCity] = useState('')
   const [gender, setGender] = useState('Мужской')
+
   const fileInputRef = useRef(null)
 
   const menuItems = [
