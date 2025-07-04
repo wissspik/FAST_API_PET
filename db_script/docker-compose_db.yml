@@ -2,18 +2,18 @@ services:
   postgres:
     image: postgres:15.4
     container_name: postgres
-    env_file:
-      - db_script/.env
     restart: always
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./db_script:/docker-entrypoint-initdb.d
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
-      POSTGRES_HOST_AUTH_METHOD: md5
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: strongpass
+      POSTGRES_DB: full_db
     networks:
-      - common_net
+      - kong-net
   kafka:
     image: 'confluentinc/cp-kafka:latest'
     container_name: kafka
@@ -24,7 +24,7 @@ services:
     volumes:
       - kfdata:/var/lib/kafka/data
     networks:
-      - common_net
+      - kong-net
     healthcheck:
       test: [ "CMD", "bash", "-c", "echo > /dev/tcp/localhost/9092" ]
       interval: 10s
@@ -60,5 +60,4 @@ volumes:
   kfdata:
 
 networks:
-  common_net:
-    external: true
+  kong-net:

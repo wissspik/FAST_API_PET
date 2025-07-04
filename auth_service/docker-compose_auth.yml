@@ -17,7 +17,7 @@ services:
     ports:
       - "8001:8000"
     networks:
-      - common_net
+      - kong-net
   redis:
     image: redis:latest
     container_name: redis-server
@@ -29,8 +29,7 @@ services:
       - redis-data:/data/redis-data
     restart: unless-stopped
     networks:
-      - common_net
+      - kong-net
 
 networks:
-  common_net:
-    external: true
+  kong-net:
