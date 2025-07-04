@@ -10,6 +10,8 @@ services:
       - ./db_script:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: md5
     networks:
       - common_net
   kafka:
