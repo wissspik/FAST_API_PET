@@ -14,6 +14,13 @@ import {
 function Profile() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [showForm, setShowForm] = useState(false)
+  const [name, setName] = useState('')
+  const [surname, setSurname] = useState('')
+  const [patronymic, setPatronymic] = useState('')
+  const [age, setAge] = useState('')
+  const [city, setCity] = useState('')
+  const [gender, setGender] = useState('Мужской')
   const fileInputRef = useRef(null)
 
   const menuItems = [
@@ -50,6 +57,28 @@ function Profile() {
       credentials: 'include',
     })
     navigate('/login')
+  }
+
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      await fetch('http://localhost:8001/profile/put_data_profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          name,
+          surname,
+          patronymic,
+          gender,
+          city,
+          age: Number(age),
+        }),
+      })
+      setShowForm(false)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return (
@@ -125,7 +154,10 @@ function Profile() {
                   <span className="info-value">Мужской</span>
                 </div>
               </div>
-              <button className="edit-profile-btn">
+              <button
+                className="edit-profile-btn"
+                onClick={() => setShowForm(true)}
+              >
                 <i className="fas fa-edit" /> Заполнить профиль
               </button>
             </div>
@@ -176,6 +208,100 @@ function Profile() {
           </button>
         </div>
       </div>
+      {showForm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <button className="close-btn" onClick={() => setShowForm(false)}>
+              &times;
+            </button>
+            <form id="profileForm" onSubmit={handleProfileSubmit}>
+              <div className="form-group">
+                <label htmlFor="firstName">Имя:</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="lastName">Фамилия:</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  value={surname}
+                  onChange={(e) => setSurname(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="middleName">Отчество:</label>
+                <input
+                  type="text"
+                  id="middleName"
+                  name="middleName"
+                  value={patronymic}
+                  onChange={(e) => setPatronymic(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="age">Возраст:</label>
+                <input
+                  type="number"
+                  id="age"
+                  name="age"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="city">Город:</label>
+                <input
+                  type="text"
+                  id="city"
+                  name="city"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label>Пол:</label>
+                <div>
+                  <input
+                    type="radio"
+                    id="male"
+                    name="gender"
+                    value="Мужской"
+                    checked={gender === 'Мужской'}
+                    onChange={(e) => setGender(e.target.value)}
+                  />
+                  <label htmlFor="male">Мужской</label>
+                  <input
+                    type="radio"
+                    id="female"
+                    name="gender"
+                    value="Женский"
+                    checked={gender === 'Женский'}
+                    onChange={(e) => setGender(e.target.value)}
+                  />
+                  <label htmlFor="female">Женский</label>
+                  <input
+                    type="radio"
+                    id="other"
+                    name="gender"
+                    value="Другой"
+                    checked={gender === 'Другой'}
+                    onChange={(e) => setGender(e.target.value)}
+                  />
+                  <label htmlFor="other">Другой</label>
+                </div>
+              </div>
+              <button type="submit" className="save-btn">Сохранить</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
