@@ -24,7 +24,7 @@ function Registration() {
       alert('Пароли не совпадают!')
       return
     }
-    const response = await fetch('http://localhost:8001/registration', {
+    const response = await fetch('http://localhost:8000/registration', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
