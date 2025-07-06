@@ -37,6 +37,13 @@ function Profile() {
   const [gender, setGender] = useState('Мужской')
   const [login, setLogin] = useState('')
 
+  const [editName, setEditName] = useState('')
+  const [editSurname, setEditSurname] = useState('')
+  const [editPatronymic, setEditPatronymic] = useState('')
+  const [editAge, setEditAge] = useState('')
+  const [editCity, setEditCity] = useState('')
+  const [editGender, setEditGender] = useState('Мужской')
+
   const fileInputRef = useRef(null)
 
   useEffect(() => {
@@ -81,6 +88,13 @@ function Profile() {
         setAge(String(user_data.age || ''))
         setCity(user_data.city || '')
         setGender(user_data.gender || 'Мужской')
+
+        setEditName(user_data.name || '')
+        setEditSurname(user_data.surname || '')
+        setEditPatronymic(user_data.patronymic || '')
+        setEditAge(String(user_data.age || ''))
+        setEditCity(user_data.city || '')
+        setEditGender(user_data.gender || 'Мужской')
       }
     }
 
@@ -100,6 +114,16 @@ function Profile() {
     { label: 'Мессенджер', Icon: MessageIcon },
     { label: 'Помощь', Icon: HelpIcon },
   ]
+
+  const openForm = () => {
+    setEditName(name)
+    setEditSurname(surname)
+    setEditPatronymic(patronymic)
+    setEditAge(age)
+    setEditCity(city)
+    setEditGender(gender)
+    setShowForm(true)
+  }
 
   const handleUploadClick = () => {
     fileInputRef.current?.click()
@@ -133,20 +157,29 @@ function Profile() {
   const handleProfileSubmit = async (e) => {
     e.preventDefault()
     try {
-      await fetch('http://localhost:8001/profile/put_data_profile', {
-        method: 'POST',
+      const res = await fetch('http://localhost:8001/profile/change_profile', {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          name,
-          surname,
-          patronymic,
-          gender,
-          city,
-          age: Number(age),
+          user_id: decodedId,
+          name: editName,
+          surname: editSurname,
+          patronymic: editPatronymic,
+          gender: editGender,
+          city: editCity,
+          age: Number(editAge),
         }),
       })
-      setShowForm(false)
+      if (res.ok) {
+        setName(editName)
+        setSurname(editSurname)
+        setPatronymic(editPatronymic)
+        setGender(editGender)
+        setCity(editCity)
+        setAge(editAge)
+        setShowForm(false)
+      }
     } catch (err) {
       console.error(err)
     }
@@ -227,7 +260,7 @@ function Profile() {
               </div>
               <button
                 className="edit-profile-btn"
-                onClick={() => setShowForm(true)}
+                onClick={openForm}
               >
                 <i className="fas fa-edit" /> Заполнить профиль
               </button>
@@ -296,8 +329,8 @@ function Profile() {
                   type="text"
                   id="firstName"
                   name="firstName"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
                 />
               </div>
               <div className="form-group">
@@ -306,8 +339,8 @@ function Profile() {
                   type="text"
                   id="lastName"
                   name="lastName"
-                  value={surname}
-                  onChange={(e) => setSurname(e.target.value)}
+                  value={editSurname}
+                  onChange={(e) => setEditSurname(e.target.value)}
                 />
               </div>
               <div className="form-group">
@@ -316,8 +349,8 @@ function Profile() {
                   type="text"
                   id="middleName"
                   name="middleName"
-                  value={patronymic}
-                  onChange={(e) => setPatronymic(e.target.value)}
+                  value={editPatronymic}
+                  onChange={(e) => setEditPatronymic(e.target.value)}
                 />
               </div>
               <div className="form-group">
@@ -326,8 +359,8 @@ function Profile() {
                   type="number"
                   id="age"
                   name="age"
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
+                  value={editAge}
+                  onChange={(e) => setEditAge(e.target.value)}
                 />
               </div>
               <div className="form-group">
@@ -336,8 +369,8 @@ function Profile() {
                   type="text"
                   id="city"
                   name="city"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
+                  value={editCity}
+                  onChange={(e) => setEditCity(e.target.value)}
                 />
               </div>
               <div className="form-group">
@@ -348,8 +381,8 @@ function Profile() {
                     id="male"
                     name="gender"
                     value="Мужской"
-                    checked={gender === 'Мужской'}
-                    onChange={(e) => setGender(e.target.value)}
+                    checked={editGender === 'Мужской'}
+                    onChange={(e) => setEditGender(e.target.value)}
                   />
                   <label htmlFor="male">Мужской</label>
                   <input
@@ -357,8 +390,8 @@ function Profile() {
                     id="female"
                     name="gender"
                     value="Женский"
-                    checked={gender === 'Женский'}
-                    onChange={(e) => setGender(e.target.value)}
+                    checked={editGender === 'Женский'}
+                    onChange={(e) => setEditGender(e.target.value)}
                   />
                   <label htmlFor="female">Женский</label>
                   <input
@@ -366,8 +399,8 @@ function Profile() {
                     id="other"
                     name="gender"
                     value="Другой"
-                    checked={gender === 'Другой'}
-                    onChange={(e) => setGender(e.target.value)}
+                    checked={editGender === 'Другой'}
+                    onChange={(e) => setEditGender(e.target.value)}
                   />
                   <label htmlFor="other">Другой</label>
                 </div>
