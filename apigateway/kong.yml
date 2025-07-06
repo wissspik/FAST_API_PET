@@ -1,0 +1,18 @@
+_format_version: "2.1"
+
+services:
+  - name: auth_service
+    url : http://localhost:8000/
+
+    routes:
+      - name: entrance-route
+        paths: [/entrance]
+        methods: POST
+      - name: registration-route
+        paths: [ /registration ]
+        methods: POST
+      - name: logout-route
+        paths: [ /logout ]
+        methods: POST
+
+

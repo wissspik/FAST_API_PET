@@ -4,15 +4,13 @@ services:
       depends_on:
         postgres:
           condition: service_healthy
-      volumes:
-        - kong-database-vol:/var/lib/postgresql/data
       command: kong migrations bootstrap
       environment:
-        DB_USER: kong
-        DB_PASSWORD: kong
-        DB_HOST: postgres
-        DB_PORT: 5432
-        DB_NAME: kong_db
+        KONG_DATABASE: postgres
+        KONG_PG_HOST: postgres
+        KONG_PG_USER: kong
+        KONG_PG_PASSWORD: kong
+        KONG_PG_DATABASE: kong_db
       networks:
         - kong-net
   kong:
@@ -42,8 +40,5 @@ services:
       - "8444:8444"   # admin API HTTPS
     networks:
       - kong-net
-volumes:
-  kong-database-vol:
-
 networks:
   kong-net:
