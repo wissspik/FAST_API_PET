@@ -49,6 +49,6 @@ async def put_data_profile(session : SessionDep,id : int,data : dict) -> bool:
     result = await session.execute(stml)
     user = result.scalar_one_or_none()
     if user is not None:
-        return  True
+        return True
     else:
         return False

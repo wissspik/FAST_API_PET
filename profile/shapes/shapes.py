@@ -4,6 +4,7 @@ class FileUpload(BaseModel):
     user_id: int
 
 class ChangeProfile(BaseModel):
+    user_id: int
     name: str
     surname: str
     patronymic: str
