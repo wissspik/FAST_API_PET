@@ -208,7 +208,7 @@ async def get_access_w_refresh(refresh_token: str = Cookie(None,alias="refresh_t
         max_age=int(ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     return response
-async def create_cookie_file(response : dict,access_token : str,refresh_token : str):
+def create_cookie_file(response : dict,access_token : str,refresh_token : str):
     response.set_cookie(
         key="access_token",
         value=access_token,

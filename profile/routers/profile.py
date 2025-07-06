@@ -1,6 +1,6 @@
 from fastapi import APIRouter,HTTPException,Depends
 
-
+from profile.database.base import SessionDep
 from profile.utils.sql_request import get_user_id
 
 app = APIRouter(tags=['profile'])
@@ -19,4 +19,5 @@ async def profile(user_id : int):
         'city': user.city,
         'age': user.age
     }
+    print('сейчас будет return')
     return {'user_data':user_data}

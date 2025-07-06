@@ -32,8 +32,8 @@ async def change_login(response : Response,session:SessionDep,data:ChangeLogin):
     if result:
         response.delete_cookie("access_token", path="/")
         response.delete_cookie("refresh_token", path="/")
-        access_token = create_access_token(result)
-        refresh_token = create_refresh_token(result)
+        access_token = await create_access_token(result)
+        refresh_token = await create_refresh_token(result)
         response = JSONResponse({"message": "Успешная смена пароя"})
         return create_cookie_file(response, access_token, refresh_token)
     else:

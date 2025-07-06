@@ -36,13 +36,13 @@ function Feed() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const res = await fetch('http://localhost:8000/protected', {
+      const res = await fetch('http://localhost:8001/protected', {
         credentials: 'include',
       })
 
       if (res.ok) return
 
-      const refreshRes = await fetch('http://localhost:8000/refresh', {
+      const refreshRes = await fetch('http://localhost:8001/refresh', {
         credentials: 'include',
       })
 
@@ -51,7 +51,7 @@ function Feed() {
         return
       }
 
-      const verify = await fetch('http://localhost:8000/protected', {
+      const verify = await fetch('http://localhost:8001/protected', {
         credentials: 'include',
       })
 
@@ -64,7 +64,7 @@ function Feed() {
   }, [navigate])
 
   const handleLogout = async () => {
-    await fetch('http://localhost:8000/logout', {
+    await fetch('http://localhost:8001/logout', {
       method: 'POST',
       credentials: 'include',
     })

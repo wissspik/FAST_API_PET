@@ -9,6 +9,7 @@ async def get_user_id(user_id: int) -> bool:
         stml = select(Profile).filter_by(id=user_id)
         result = await session.execute(stml)
         found_user = result.scalar_one_or_none()
+        print(found_user)
         return found_user
 
 

@@ -61,10 +61,21 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/var/lib/mongo/data
+    networks:
+      - kong-net
 
 volumes:
   pgdata:
   kfdata:
+  mongo_data:
 
 
 networks:

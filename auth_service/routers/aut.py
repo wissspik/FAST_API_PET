@@ -55,18 +55,18 @@ async def registration(data: Registration,session:SessionDep):
     if not found_user:
         new_user = await create_user(session,data.login,data.password)
         # создаем access токен
-        access_token =  create_access_token(new_user.id)
+        access_token = await create_access_token(new_user.id)
 
         # создаем refresh токен
-        refresh_token =  create_refresh_token(new_user.id)
+        refresh_token = await  create_refresh_token(new_user.id)
 
-        response = JSONResponse({})
+        response = JSONResponse({"message": "Успешный логин"})
 
         logger.info(
             "A user has been created",
             extra={"user_id": new_user.id, "login": new_user.login}
         )
-        return await create_cookie_file(response,access_token,refresh_token)
+        return  create_cookie_file(response,access_token,refresh_token)
     else:
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
@@ -84,7 +84,7 @@ async def entrance(data:Authorization,session:SessionDep):
 
         response = JSONResponse({"message": "Успешный логин"})
 
-        return await create_cookie_file(response,access_token,refresh_token)
+        return create_cookie_file(response,access_token,refresh_token)
     else:
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,

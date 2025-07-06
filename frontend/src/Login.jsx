@@ -10,7 +10,7 @@ function Login() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const res = await fetch('http://localhost:8000/protected', {
+      const res = await fetch('http://localhost:8001/protected', {
         credentials: 'include',
       })
 
@@ -19,13 +19,13 @@ function Login() {
         return
       }
 
-      const refreshRes = await fetch('http://localhost:8000/refresh', {
+      const refreshRes = await fetch('http://localhost:8001/refresh', {
         credentials: 'include',
       })
 
       if (!refreshRes.ok) return
 
-      const verify = await fetch('http://localhost:8000/protected', {
+      const verify = await fetch('http://localhost:8001/protected', {
         credentials: 'include',
       })
 
@@ -38,7 +38,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const response = await fetch('http://localhost:8000/entrance', {
+    const response = await fetch('http://localhost:8001/entrance', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

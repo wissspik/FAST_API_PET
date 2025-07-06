@@ -50,12 +50,12 @@ function Profile() {
     const fetchProfile = async () => {
       let id = userId || decodedId
 
-      const auth = await fetch('http://localhost:8000/protected', {
+      const auth = await fetch('http://localhost:8001/protected', {
         credentials: 'include',
       })
 
       if (!auth.ok) {
-        const refreshRes = await fetch('http://localhost:8000/refresh', {
+        const refreshRes = await fetch('http://localhost:8001/refresh', {
           credentials: 'include',
         })
         if (!refreshRes.ok) {
@@ -76,7 +76,7 @@ function Profile() {
         navigate(`/profile/${id}`, { replace: true })
       }
 
-      const profileRes = await fetch(`http://localhost:8001/profile/${id}`, {
+      const profileRes = await fetch(`http://localhost:8002/profile/${id}`, {
         credentials: 'include',
       })
       if (profileRes.ok) {
@@ -147,7 +147,7 @@ function Profile() {
   }
 
   const handleLogout = async () => {
-    await fetch('http://localhost:8000/logout', {
+    await fetch('http://localhost:8001/logout', {
       method: 'POST',
       credentials: 'include',
     })
@@ -157,7 +157,7 @@ function Profile() {
   const handleProfileSubmit = async (e) => {
     e.preventDefault()
     try {
-      const res = await fetch('http://localhost:8001/profile/change_profile', {
+      const res = await fetch('http://localhost:8002/profile/change_profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
