@@ -263,26 +263,25 @@ function Profile() {
                   <span className="info-value">{gender}</span>
                 </div>
               </div>
-              {isOwnProfile && (
-                <button
-                  className="edit-profile-btn"
-                  onClick={openForm}
-                >
-                  <i className="fas fa-edit" /> Заполнить профиль
-                </button>
-              )}
+              {isOwnProfile ? (
+                <>
+                  <button
+                    className="edit-profile-btn"
+                    onClick={openForm}
+                  >
+                    <i className="fas fa-edit" /> Заполнить профиль
+                  </button>
+                  <button className="write-article-btn">
+                    <i className="fas fa-pen" /> Написать статью
+                  </button>
+                </>
+              ) : null}
             </div>
           </div>
-          {isOwnProfile ? (
-            <button className="create-post-btn">
-              <i className="fas fa-plus-circle" /> Создать пост
-            </button>
-          ) : (
-            <div className="friend-actions">
-              <button className="add-friend-btn">Добавить в друзья</button>
-              <button className="send-message-btn">Написать сообщение</button>
-            </div>
-          )}
+          <div className="friend-actions">
+            <button className="add-friend-btn">Добавить в друзья</button>
+            <button className="send-message-btn">Написать сообщение</button>
+          </div>
         </div>
       </main>
 

@@ -46,7 +46,7 @@ body {
     padding: 0 1rem;
 }
 
-.create-post-btn {
+.write-article-btn {
     background-color: var(--primary-dark);
     color: white;
     border: none;
@@ -59,7 +59,7 @@ body {
     transition: all 0.3s;
 }
 
-.create-post-btn:hover {
+.write-article-btn:hover {
     background-color: #a370d8;
     transform: translateY(-2px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
