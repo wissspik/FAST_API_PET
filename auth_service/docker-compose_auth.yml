@@ -15,7 +15,7 @@ services:
       postgres:
         condition: service_started
     ports:
-      - "8001:8000"
+      - "8001:8001"
     networks:
       - kong-net
   redis:

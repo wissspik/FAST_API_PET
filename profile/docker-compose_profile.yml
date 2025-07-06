@@ -12,7 +12,7 @@ services:
       postgres:
         condition: service_started
     ports:
-      - "8002:8000"
+      - "8002:8002"
     networks:
       - kong-net
 networks:

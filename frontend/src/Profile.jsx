@@ -29,21 +29,21 @@ function Profile() {
   useEffect(() => {
     const fetchProfile = async () => {
       let userId
-      const res = await fetch('http://localhost:8000/protected', {
+      const res = await fetch('http://localhost:8001/protected', {
         credentials: 'include',
       })
       if (res.ok) {
         const data = await res.json()
         userId = data.user_id
       } else {
-        const refreshRes = await fetch('http://localhost:8000/refresh', {
+        const refreshRes = await fetch('http://localhost:8001/refresh', {
           credentials: 'include',
         })
         if (!refreshRes.ok) {
           navigate('/login')
           return
         }
-        const verify = await fetch('http://localhost:8000/protected', {
+        const verify = await fetch('http://localhost:8001/protected', {
           credentials: 'include',
         })
         if (!verify.ok) {
@@ -54,7 +54,7 @@ function Profile() {
         userId = verifyData.user_id
       }
 
-      const profileRes = await fetch(`http://localhost:8001/profile/${userId}`, {
+      const profileRes = await fetch(`http://localhost:8002/profile/${userId}`, {
         credentials: 'include',
       })
       if (profileRes.ok) {
@@ -90,7 +90,7 @@ function Profile() {
     formData.append('file', file)
     formData.append('data', JSON.stringify({ user_id: 1 }))
     try {
-      await fetch('http://localhost:8001/profile/data', {
+      await fetch('http://localhost:8002/profile', {
         method: 'POST',
         body: formData,
         credentials: 'include',
@@ -101,7 +101,7 @@ function Profile() {
   }
 
   const handleLogout = async () => {
-    await fetch('http://localhost:8000/logout', {
+    await fetch('http://localhost:8001/logout', {
       method: 'POST',
       credentials: 'include',
     })

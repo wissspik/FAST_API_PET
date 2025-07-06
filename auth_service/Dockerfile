@@ -21,5 +21,6 @@ COPY auth_service/alembic.ini ./auth_service/
 
 COPY auth_service ./auth_service
 
-CMD ["uvicorn", "auth_service.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "auth_service.main:app", "--reload", "--host", "0.0.0.0", "--port", "8001"]
+
 

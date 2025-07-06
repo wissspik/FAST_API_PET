@@ -21,5 +21,5 @@ COPY profile/alembic.ini ./profile/
 
 COPY profile ./profile
 
-CMD ["uvicorn", "profile.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "profile.main:app", "--reload", "--host", "0.0.0.0", "--port", "8002"]
 
