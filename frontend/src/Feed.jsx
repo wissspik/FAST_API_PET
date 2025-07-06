@@ -1,16 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { jwtDecode } from 'jwt-decode'
-
-const getUserIdFromToken = () => {
-  const match = document.cookie.match(/access_token=([^;]+)/)
-  if (!match) return null
-  try {
-    return jwtDecode(decodeURIComponent(match[1])).sub
-  } catch {
-    return null
-  }
-}
 import {
   ProfileIcon,
   FeedIcon,
@@ -30,34 +19,39 @@ import {
   StatsIcon,
 } from './icons.jsx'
 
+async function getUserId() {
+  const auth = await fetch('http://localhost:8001/protected', {
+    credentials: 'include',
+  })
+  if (auth.ok) {
+    const { user_id } = await auth.json()
+    return user_id
+  }
+  const refreshRes = await fetch('http://localhost:8001/refresh', {
+    credentials: 'include',
+  })
+  if (!refreshRes.ok) return null
+  const verify = await fetch('http://localhost:8001/protected', {
+    credentials: 'include',
+  })
+  if (!verify.ok) return null
+  const { user_id } = await verify.json()
+  return user_id
+}
+
 function Feed() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState(null)
 
   useEffect(() => {
     const checkAuth = async () => {
-      const res = await fetch('http://localhost:8001/protected', {
-        credentials: 'include',
-      })
-
-      if (res.ok) return
-
-      const refreshRes = await fetch('http://localhost:8001/refresh', {
-        credentials: 'include',
-      })
-
-      if (!refreshRes.ok) {
+      const id = await getUserId()
+      if (!id) {
         navigate('/login')
         return
       }
-
-      const verify = await fetch('http://localhost:8001/protected', {
-        credentials: 'include',
-      })
-
-      if (!verify.ok) {
-        navigate('/login')
-      }
+      setCurrentUserId(id)
     }
 
     checkAuth()
@@ -76,8 +70,7 @@ function Feed() {
       label: 'Профиль',
       Icon: ProfileIcon,
       onClick: () => {
-        const id = getUserIdFromToken()
-        if (id) navigate(`/profile/${id}`)
+        if (currentUserId) navigate(`/profile/${currentUserId}`)
       },
     },
     { label: 'Лента', Icon: FeedIcon },
