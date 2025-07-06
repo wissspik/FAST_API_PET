@@ -1,16 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { jwtDecode } from 'jwt-decode'
-
-const getUserIdFromToken = () => {
-  const match = document.cookie.match(/access_token=([^;]+)/)
-  if (!match) return null
-  try {
-    return jwtDecode(decodeURIComponent(match[1])).sub
-  } catch {
-    return null
-  }
-}
 import './Profile.css'
 import {
   ProfileIcon,
@@ -22,11 +11,31 @@ import {
   StatsIcon,
 } from './icons.jsx'
 
+async function getUserId() {
+  const auth = await fetch('http://localhost:8001/protected', {
+    credentials: 'include',
+  })
+  if (auth.ok) {
+    const { user_id } = await auth.json()
+    return user_id
+  }
+  const refreshRes = await fetch('http://localhost:8001/refresh', {
+    credentials: 'include',
+  })
+  if (!refreshRes.ok) return null
+  const verify = await fetch('http://localhost:8001/protected', {
+    credentials: 'include',
+  })
+  if (!verify.ok) return null
+  const { user_id } = await verify.json()
+  return user_id
+}
+
 function Profile() {
   const navigate = useNavigate()
   const { userId } = useParams()
-  const decodedId = getUserIdFromToken()
-  const isOwnProfile = !userId || userId === decodedId
+  const [currentUserId, setCurrentUserId] = useState(null)
+  const isOwnProfile = !userId || userId === currentUserId
   const [menuOpen, setMenuOpen] = useState(false)
   const [showForm, setShowForm] = useState(false)
 
@@ -49,29 +58,15 @@ function Profile() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      let id = userId || decodedId
-
-      const auth = await fetch('http://localhost:8001/protected', {
-        credentials: 'include',
-      })
-
-      if (!auth.ok) {
-        const refreshRes = await fetch('http://localhost:8001/refresh', {
-          credentials: 'include',
-        })
-        if (!refreshRes.ok) {
-          navigate('/login')
-          return
-        }
+      const idFromProtected = await getUserId()
+      if (!idFromProtected) {
+        navigate('/login')
+        return
       }
 
-      if (!id) {
-        id = getUserIdFromToken()
-        if (!id) {
-          navigate('/login')
-          return
-        }
-      }
+      setCurrentUserId(idFromProtected)
+
+      const id = userId || idFromProtected
 
       if (!userId && id) {
         navigate(`/profile/${id}`, { replace: true })
@@ -100,15 +95,14 @@ function Profile() {
     }
 
     fetchProfile()
-  }, [navigate, userId, decodedId])
+  }, [navigate, userId])
 
   const menuItems = [
     {
       label: 'Профиль',
       Icon: ProfileIcon,
       onClick: () => {
-        const id = getUserIdFromToken()
-        if (id) navigate(`/profile/${id}`)
+        if (currentUserId) navigate(`/profile/${currentUserId}`)
       },
     },
     { label: 'Лента', Icon: FeedIcon, onClick: () => navigate('/feed') },
@@ -163,7 +157,7 @@ function Profile() {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          user_id: decodedId,
+          user_id: currentUserId,
           name: editName,
           surname: editSurname,
           patronymic: editPatronymic,
