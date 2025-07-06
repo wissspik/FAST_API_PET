@@ -44,7 +44,13 @@ function Profile() {
   const [patronymic, setPatronymic] = useState('')
   const [age, setAge] = useState('')
   const [city, setCity] = useState('')
-  const [gender, setGender] = useState('Мужской')
+  const genderMap = {
+    male: 'Мужской',
+    female: 'Женский',
+    other: 'Другой',
+  }
+
+  const [gender, setGender] = useState('male')
   const [login, setLogin] = useState('')
 
   const [editName, setEditName] = useState('')
@@ -52,7 +58,7 @@ function Profile() {
   const [editPatronymic, setEditPatronymic] = useState('')
   const [editAge, setEditAge] = useState('')
   const [editCity, setEditCity] = useState('')
-  const [editGender, setEditGender] = useState('Мужской')
+  const [editGender, setEditGender] = useState('male')
 
   const fileInputRef = useRef(null)
 
@@ -83,14 +89,14 @@ function Profile() {
         setPatronymic(user_data.patronymic || '')
         setAge(String(user_data.age || ''))
         setCity(user_data.city || '')
-        setGender(user_data.gender || 'Мужской')
+        setGender(user_data.gender || 'male')
 
         setEditName(user_data.name || '')
         setEditSurname(user_data.surname || '')
         setEditPatronymic(user_data.patronymic || '')
         setEditAge(String(user_data.age || ''))
         setEditCity(user_data.city || '')
-        setEditGender(user_data.gender || 'Мужской')
+        setEditGender(user_data.gender || 'male')
       }
     }
 
@@ -254,7 +260,7 @@ function Profile() {
                 </div>
                 <div className="info-item">
                   <span className="info-label">Пол:</span>
-                  <span className="info-value">{gender}</span>
+                  <span className="info-value">{genderMap[gender] || gender}</span>
                 </div>
               </div>
               {isOwnProfile ? (
@@ -376,15 +382,15 @@ function Profile() {
                   onChange={(e) => setEditCity(e.target.value)}
                 />
               </div>
-              <div className="form-group">
+                <div className="form-group">
                 <label>Пол:</label>
                 <div>
                   <input
                     type="radio"
                     id="male"
                     name="gender"
-                    value="Мужской"
-                    checked={editGender === 'Мужской'}
+                    value="male"
+                    checked={editGender === 'male'}
                     onChange={(e) => setEditGender(e.target.value)}
                   />
                   <label htmlFor="male">Мужской</label>
@@ -392,8 +398,8 @@ function Profile() {
                     type="radio"
                     id="female"
                     name="gender"
-                    value="Женский"
-                    checked={editGender === 'Женский'}
+                    value="female"
+                    checked={editGender === 'female'}
                     onChange={(e) => setEditGender(e.target.value)}
                   />
                   <label htmlFor="female">Женский</label>
@@ -401,8 +407,8 @@ function Profile() {
                     type="radio"
                     id="other"
                     name="gender"
-                    value="Другой"
-                    checked={editGender === 'Другой'}
+                    value="other"
+                    checked={editGender === 'other'}
                     onChange={(e) => setEditGender(e.target.value)}
                   />
                   <label htmlFor="other">Другой</label>
