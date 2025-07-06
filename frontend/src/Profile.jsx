@@ -1,5 +1,16 @@
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import jwtDecode from 'jwt-decode'
+
+const getUserIdFromToken = () => {
+  const match = document.cookie.match(/access_token=([^;]+)/)
+  if (!match) return null
+  try {
+    return jwtDecode(decodeURIComponent(match[1])).sub
+  } catch {
+    return null
+  }
+}
 import './Profile.css'
 import {
   ProfileIcon,
@@ -13,6 +24,8 @@ import {
 
 function Profile() {
   const navigate = useNavigate()
+  const { userId } = useParams()
+  const decodedId = getUserIdFromToken()
   const [menuOpen, setMenuOpen] = useState(false)
   const [showForm, setShowForm] = useState(false)
 
@@ -28,14 +41,13 @@ function Profile() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      let userId
-      const res = await fetch('http://localhost:8000/protected', {
+      let id = userId || decodedId
+
+      const auth = await fetch('http://localhost:8000/protected', {
         credentials: 'include',
       })
-      if (res.ok) {
-        const data = await res.json()
-        userId = data.user_id
-      } else {
+
+      if (!auth.ok) {
         const refreshRes = await fetch('http://localhost:8000/refresh', {
           credentials: 'include',
         })
@@ -43,18 +55,21 @@ function Profile() {
           navigate('/login')
           return
         }
-        const verify = await fetch('http://localhost:8000/protected', {
-          credentials: 'include',
-        })
-        if (!verify.ok) {
+      }
+
+      if (!id) {
+        id = getUserIdFromToken()
+        if (!id) {
           navigate('/login')
           return
         }
-        const verifyData = await verify.json()
-        userId = verifyData.user_id
       }
 
-      const profileRes = await fetch(`http://localhost:8001/profile/${userId}`, {
+      if (!userId && id) {
+        navigate(`/profile/${id}`, { replace: true })
+      }
+
+      const profileRes = await fetch(`http://localhost:8001/profile/${id}`, {
         credentials: 'include',
       })
       if (profileRes.ok) {
@@ -70,10 +85,17 @@ function Profile() {
     }
 
     fetchProfile()
-  }, [navigate])
+  }, [navigate, userId, decodedId])
 
   const menuItems = [
-    { label: 'Профиль', Icon: ProfileIcon, onClick: () => navigate('/profile') },
+    {
+      label: 'Профиль',
+      Icon: ProfileIcon,
+      onClick: () => {
+        const id = getUserIdFromToken()
+        if (id) navigate(`/profile/${id}`)
+      },
+    },
     { label: 'Лента', Icon: FeedIcon, onClick: () => navigate('/feed') },
     { label: 'Мессенджер', Icon: MessageIcon },
     { label: 'Помощь', Icon: HelpIcon },
