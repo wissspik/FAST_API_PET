@@ -26,7 +26,7 @@ async function getUserId() {
   const verify = await fetch('http://localhost:8001/protected', {
     credentials: 'include',
   })
-  if (!verify.ok) return null
+  if (!verify.ok) return undefined
   const { user_id } = await verify.json()
   return user_id
 }
@@ -59,12 +59,12 @@ function Profile() {
   useEffect(() => {
     const fetchProfile = async () => {
       const idFromProtected = await getUserId()
-      if (!idFromProtected) {
+      if (idFromProtected === null) {
         navigate('/login')
         return
       }
 
-      setCurrentUserId(idFromProtected)
+      if (idFromProtected !== undefined) setCurrentUserId(idFromProtected)
 
       const id = userId || idFromProtected
 

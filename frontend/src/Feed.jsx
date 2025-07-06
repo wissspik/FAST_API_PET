@@ -27,14 +27,16 @@ async function getUserId() {
     const { user_id } = await auth.json()
     return user_id
   }
+
   const refreshRes = await fetch('http://localhost:8001/refresh', {
     credentials: 'include',
   })
   if (!refreshRes.ok) return null
+
   const verify = await fetch('http://localhost:8001/protected', {
     credentials: 'include',
   })
-  if (!verify.ok) return null
+  if (!verify.ok) return undefined
   const { user_id } = await verify.json()
   return user_id
 }
@@ -47,11 +49,11 @@ function Feed() {
   useEffect(() => {
     const checkAuth = async () => {
       const id = await getUserId()
-      if (!id) {
+      if (id === null) {
         navigate('/login')
         return
       }
-      setCurrentUserId(id)
+      if (id !== undefined) setCurrentUserId(id)
     }
 
     checkAuth()
