@@ -14,7 +14,6 @@ services:
     ports:
       - "8002:8000"
     networks:
-      - common_net
+      - kong-net
 networks:
-  common_net:
-    external: true
+  kong-net:
