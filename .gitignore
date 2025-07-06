@@ -1,0 +1,13 @@
+# Python cache
+**/__pycache__/
+*.pyc
+
+# Node
+frontend/node_modules/
+
+# Build
+frontend/dist/
+
+# Others
+.env
+

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import jwtDecode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 
 const getUserIdFromToken = () => {
   const match = document.cookie.match(/access_token=([^;]+)/)
@@ -236,6 +236,10 @@ function Profile() {
           <button className="create-post-btn">
             <i className="fas fa-plus-circle" /> Создать пост
           </button>
+          <div className="friend-actions">
+            <button className="add-friend-btn">Добавить в друзья</button>
+            <button className="send-message-btn">Написать сообщение</button>
+          </div>
         </div>
       </main>
 
