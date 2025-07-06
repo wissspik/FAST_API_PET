@@ -1,5 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import jwtDecode from 'jwt-decode'
+
+const getUserIdFromToken = () => {
+  const match = document.cookie.match(/access_token=([^;]+)/)
+  if (!match) return null
+  try {
+    return jwtDecode(decodeURIComponent(match[1])).sub
+  } catch {
+    return null
+  }
+}
 import {
   ProfileIcon,
   FeedIcon,
@@ -61,7 +72,14 @@ function Feed() {
   }
 
   const menuItems = [
-    { label: 'Профиль', Icon: ProfileIcon, onClick: () => navigate('/profile') },
+    {
+      label: 'Профиль',
+      Icon: ProfileIcon,
+      onClick: () => {
+        const id = getUserIdFromToken()
+        if (id) navigate(`/profile/${id}`)
+      },
+    },
     { label: 'Лента', Icon: FeedIcon },
     { label: 'Мессенджер', Icon: MessageIcon },
     { label: 'Помощь', Icon: HelpIcon },
