@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Profile.css'
 import {
@@ -22,8 +22,55 @@ function Profile() {
   const [age, setAge] = useState('')
   const [city, setCity] = useState('')
   const [gender, setGender] = useState('Мужской')
+  const [login, setLogin] = useState('')
 
   const fileInputRef = useRef(null)
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      let userId
+      const res = await fetch('http://localhost:8000/protected', {
+        credentials: 'include',
+      })
+      if (res.ok) {
+        const data = await res.json()
+        userId = data.user_id
+      } else {
+        const refreshRes = await fetch('http://localhost:8000/refresh', {
+          credentials: 'include',
+        })
+        if (!refreshRes.ok) {
+          navigate('/login')
+          return
+        }
+        const verify = await fetch('http://localhost:8000/protected', {
+          credentials: 'include',
+        })
+        if (!verify.ok) {
+          navigate('/login')
+          return
+        }
+        const verifyData = await verify.json()
+        userId = verifyData.user_id
+      }
+
+      const profileRes = await fetch(`http://localhost:8001/profile/${userId}`, {
+        credentials: 'include',
+      })
+      if (profileRes.ok) {
+        const { user_data } = await profileRes.json()
+        setLogin(user_data.login || '')
+        setName(user_data.name || '')
+        setSurname(user_data.surname || '')
+        setPatronymic(user_data.patronymic || '')
+        setAge(String(user_data.age || ''))
+        setCity(user_data.city || '')
+        setGender(user_data.gender || 'Мужской')
+      }
+    }
+
+    fetchProfile()
+  }, [navigate])
 
   const menuItems = [
     { label: 'Профиль', Icon: ProfileIcon, onClick: () => navigate('/profile') },
@@ -129,31 +176,31 @@ function Profile() {
               <div className="info-grid">
                 <div className="info-item">
                   <span className="info-label">Никнейм:</span>
-                  <span className="info-value">user123</span>
+                  <span className="info-value">{login}</span>
                 </div>
                 <div className="info-item">
                   <span className="info-label">Имя:</span>
-                  <span className="info-value">Иван</span>
+                  <span className="info-value">{name}</span>
                 </div>
                 <div className="info-item">
                   <span className="info-label">Фамилия:</span>
-                  <span className="info-value">Иванов</span>
+                  <span className="info-value">{surname}</span>
                 </div>
                 <div className="info-item">
                   <span className="info-label">Отчество:</span>
-                  <span className="info-value">Иванович</span>
+                  <span className="info-value">{patronymic}</span>
                 </div>
                 <div className="info-item">
                   <span className="info-label">Возраст:</span>
-                  <span className="info-value">25</span>
+                  <span className="info-value">{age}</span>
                 </div>
                 <div className="info-item">
                   <span className="info-label">Город:</span>
-                  <span className="info-value">Москва</span>
+                  <span className="info-value">{city}</span>
                 </div>
                 <div className="info-item">
                   <span className="info-label">Пол:</span>
-                  <span className="info-value">Мужской</span>
+                  <span className="info-value">{gender}</span>
                 </div>
               </div>
               <button
