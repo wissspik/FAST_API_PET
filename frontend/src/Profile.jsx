@@ -61,6 +61,7 @@ function Profile() {
   const [editGender, setEditGender] = useState('male')
 
   const fileInputRef = useRef(null)
+  const [photoSrc, setPhotoSrc] = useState(null)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -90,6 +91,11 @@ function Profile() {
         setAge(String(user_data.age || ''))
         setCity(user_data.city || '')
         setGender(user_data.gender || 'male')
+        if (user_data.file && user_data.mime_type) {
+          setPhotoSrc(`data:${user_data.mime_type};base64,${user_data.file}`)
+        } else {
+          setPhotoSrc(null)
+        }
 
         setEditName(user_data.name || '')
         setEditSurname(user_data.surname || '')
@@ -141,6 +147,7 @@ function Profile() {
         body: formData,
         credentials: 'include',
       })
+      setPhotoSrc(URL.createObjectURL(file))
     } catch (err) {
       console.error(err)
     }
@@ -213,7 +220,11 @@ function Profile() {
           <div className="profile-card">
             <div className="profile-photo">
               <div className="photo-placeholder">
-                <i className="fas fa-user-circle" />
+                {photoSrc ? (
+                  <img src={photoSrc} alt="avatar" className="photo-img" />
+                ) : (
+                  <i className="fas fa-user-circle" />
+                )}
               </div>
               {isOwnProfile && (
                 <>

@@ -1,4 +1,5 @@
-from fastapi import APIRouter,HTTPException,Depends
+from fastapi import APIRouter, HTTPException, Depends
+import base64
 
 from profile_service.database.base import SessionDep
 from profile_service.utils.sql_request import get_user_id_profile, get_user_id_photo
@@ -19,9 +20,10 @@ async def profile(user_id : int):
         'gender': user.gender,
         'city': user.city,
         'age': user.age,
-        'file': user_photo.file,
-        "file_name": user_photo.file_name,
-        "mime_type": user_photo.mime_type
+        'file': base64.b64encode(user_photo.file).decode() if user_photo else None,
+        "file_name": user_photo.file_name if user_photo else None,
+        "mime_type": user_photo.mime_type if user_photo else None,
+        "file_size": user_photo.file_size if user_photo else None
 
 
     }
