@@ -18,9 +18,11 @@ async def profile(user_id : int):
         'patronymic': user.patronymic,
         'gender': user.gender,
         'city': user.city,
-        'age': user.age
+        'age': user.age,
+        'file': user_photo.file,
+        "file_name": user_photo.file_name,
+        "mime_type": user_photo.mime_type
+
+
     }
-    if user_photo is None:
-        return {'user_data':user_data}
-    else:
-        ...
+    return user_data
