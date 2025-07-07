@@ -22,15 +22,17 @@ class Profile(Base):
     photos = relationship(
         "Photo",
         back_populates="profile_service",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        passive_deletes=True
     )
 
 class Photo(Base):
     __tablename__ = 'photo'
     id: Mapped[int] = mapped_column(primary_key=True)
     profile_id: Mapped[int] = mapped_column(
-        ForeignKey('profile_service.id', ondelete='SET NULL', onupdate='CASCADE'),
-        nullable=False
+        ForeignKey('profile_service.id', ondelete='CASCADE'),
+        nullable=False,
+        passive_deletes=True
     )
     file_name: Mapped[str]    = mapped_column(nullable=False)
     mime_type: Mapped[str]    = mapped_column(nullable=False)
@@ -38,4 +40,4 @@ class Photo(Base):
     file: Mapped[bytes]       = mapped_column(LargeBinary, nullable=False)
     uploaded_at: Mapped[datetime] = mapped_column(default=datetime.now, nullable=False)
 
-    profile = relationship("Profile", back_populates="photos")
+    profile_service = relationship("Profile", back_populates="photos")

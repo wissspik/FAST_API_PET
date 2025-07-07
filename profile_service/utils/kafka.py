@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from profile_service.utils.sql_request import get_user_id, create_user_id
+from profile_service.utils.sql_request import create_user_id, get_user_id_profile
 import asyncio
 from fastapi import FastAPI
 import json
@@ -30,7 +30,7 @@ async def consume_loop(consumer : AIOKafkaConsumer):
     async for msg in consumer:
         try:
             payload = json.loads(msg.value.decode("utf-8"))
-            if not await get_user_id(payload["user_id"]):
+            if not await get_user_id_profile(payload["user_id"]):
                 created_profile = await create_user_id(payload["user_id"], payload["login"])
                 logger.info(f"Created profile: {created_profile.id}")
             logger.info(f"Consumed message_service: {payload}")

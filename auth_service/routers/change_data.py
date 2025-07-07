@@ -21,14 +21,14 @@ async def change_password(session:SessionDep,data:ChangePassword):
     elif check_password(data.password_new):
         return JSONResponse(status_code=400, detail="Придумайте корректный пароль") # type: ignore
 
-    if put_password(session,data.id,data.password_old,data.password_new):
+    if await put_password(session,data.id,data.password_old,data.password_new):
         return JSONResponse(status_code=200, detail = "Пароль успешно изменён") # type: ignore
     else:
         return JSONResponse(status_code=400, detail = "Неправильный логин или пароль у пользователя") # type: ignore
 
 @app.put("/change_login")
 async def change_login(response : Response,session:SessionDep,data:ChangeLogin):
-    result = put_login(session,data.old_login,data.new_login)
+    result = await put_login(session,data.old_login,data.new_login)
     if result:
         response.delete_cookie("access_token", path="/")
         response.delete_cookie("refresh_token", path="/")
@@ -41,7 +41,7 @@ async def change_login(response : Response,session:SessionDep,data:ChangeLogin):
 
 @app.delete("/delete_account")
 async def delete_account(session:SessionDep,data:DeleteAccount):
-    result = delete_user(session,data.login)
+    result = await delete_user(session,data.login)
     if result:
         return JSONResponse(status_code=200, detail="Аккаунт успешно удалён")
     else:

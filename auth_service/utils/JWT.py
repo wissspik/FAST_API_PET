@@ -197,7 +197,7 @@ async def get_access_w_refresh(refresh_token: str = Cookie(None,alias="refresh_t
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Неверный Access токен")
-    access_token = create_access_token(user_id)
+    access_token = await create_access_token(user_id)
     response = JSONResponse({"message_service": "Успешный логин"})
     response.set_cookie(
         key="access_token",

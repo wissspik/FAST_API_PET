@@ -46,6 +46,7 @@ async def change_profile(
             detail="Данный пользователь не имеет права изменять данные другого id",
     )
     check_user = await get_user_id_profile(data.user_id)
+    print(check_user,'    получили юзера')
     if not check_user:
         raise HTTPException(status_code=400, detail="Данного id не существует")
 
