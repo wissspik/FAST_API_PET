@@ -98,6 +98,14 @@ body {
     color: #555;
 }
 
+.photo-img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
+
 .upload-btn {
     background-color: var(--primary-dark);
     color: white;
