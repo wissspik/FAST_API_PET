@@ -13,7 +13,9 @@ app = APIRouter(prefix='/profile', tags=['profile'])
 
 
 @app.post('/upload_photo')
-async def upload_file(user_id : int,file : UploadFile = File(...)):
+async def upload_file(session:SessionDep,user_id : int,file : UploadFile = File(...),key = Depends(get_access_token)):
+    if user_id != key.user_id:
+        raise HTTPException(status_code=403, detail='Пользователь не смог поменять данные другого человека')
     check_user = await  get_user_id(user_id)
     if not check_user:
         raise HTTPException(status_code=400, detail="Данного пользователя не существует")
@@ -29,24 +31,25 @@ async def upload_file(user_id : int,file : UploadFile = File(...)):
 
     uploaded_at = datetime.now(timezone.utc)
 
-    new_photo = await create_photo(contents,file_name,file.content_type,uploaded_at,user_id,file_size)
-
-
+    new_photo = await create_photo(session,contents,file_name,file.content_type,uploaded_at,user_id,file_size)
 
     return {"status":"ok"}
 
 @app.put('/change_profile')
-async def change_profile(session:SessionDep,data : ChangeProfile,key = Depends(get_access_token)):
-    if key:
-        print('ИДЕТ ПРОВЕРКА НА ID ДЛЯ ИЗМЕНЕНИЯ')
-        check_user = await get_user_id(data['user_id'])
-        if check_user:
-            result = await put_data_profile(session,data)
-            if result:
-                return {'comment':"Пользователь успешно поменял свои данные"}
-            else:
-                raise HTTPException(status_code=400, detail="Проблема с данными,который ввёл пользователь")
-        else:
-            raise HTTPException(status_code=400, detail="Данного id не существует")
-    else:
-        raise HTTPException(status_code=400, detail="Данный пользователь не имеет права изменять данные другого id")
+async def change_profile(
+    session: SessionDep,
+    data: ChangeProfile,
+    token: dict = Depends(get_access_token)):
+    if token["user_id"] != data.user_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Данный пользователь не имеет права изменять данные другого id",
+    )
+    check_user = await get_user_id(data.user_id)
+    if not check_user:
+        raise HTTPException(status_code=400, detail="Данного id не существует")
+
+    result = await put_data_profile(session, data.user_id, data.dict())
+    if not result:
+        raise HTTPException(status_code=400, detail="Проблема с данными, который ввёл пользователь")
+    return {"comment": "Пользователь успешно поменял свои данные"}

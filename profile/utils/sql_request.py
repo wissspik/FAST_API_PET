@@ -28,7 +28,7 @@ async def create_photo(
     session: SessionDep, file: bytes, file_name: str, mime_type: str, uploaded_at, user_id: int, file_size: int
 ) -> None:
     new_photo = Profile(
-        id=user_id, file_name=file_name, mime_type=mime_type, file_size=file_size, file=file, uploaded_at=uploaded_at
+        profile_id=user_id, file_name=file_name, mime_type=mime_type, file_size=file_size, file=file, uploaded_at=uploaded_at
     )
     session.add(new_photo)
     await session.commit()
@@ -48,6 +48,7 @@ async def put_data_profile(session : SessionDep,id : int,data : dict) -> bool:
         .execution_options(synchronize_session="fetch")
     )
     result = await session.execute(stml)
+    await session.commit()
     user = result.scalar_one_or_none()
     if user is not None:
         return True

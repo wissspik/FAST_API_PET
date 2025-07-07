@@ -9,6 +9,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 
 async def get_access_token(access_token: str = Cookie(None, alias="access_token")):
+    print(access_token,'DDDDDDD')
     if not access_token:
         raise HTTPException(status_code=401, detail="Token is missing")
 

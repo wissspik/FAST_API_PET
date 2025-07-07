@@ -35,7 +35,7 @@ function Profile() {
   const navigate = useNavigate()
   const { userId } = useParams()
   const [currentUserId, setCurrentUserId] = useState(null)
-  const isOwnProfile = !userId || userId === currentUserId
+    const isOwnProfile = !userId || Number(userId) === currentUserId
   const [menuOpen, setMenuOpen] = useState(false)
   const [showForm, setShowForm] = useState(false)
 
