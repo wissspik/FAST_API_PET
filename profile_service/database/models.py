@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, relationship, Mapped,mapped_column
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey,LargeBinary
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey,LargeBinary,DateTime, func
 from datetime import datetime
 from sqlalchemy.dialects.postgresql import ENUM as PGEnum
 class Base(DeclarativeBase):
@@ -38,6 +38,10 @@ class Photo(Base):
     mime_type: Mapped[str]    = mapped_column(nullable=False)
     file_size: Mapped[int]    = mapped_column(nullable=False)
     file: Mapped[bytes]       = mapped_column(LargeBinary, nullable=False)
-    uploaded_at: Mapped[datetime] = mapped_column(default=datetime.now, nullable=False)
+    uploaded_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
 
     profile_service = relationship("Profile", back_populates="photos")

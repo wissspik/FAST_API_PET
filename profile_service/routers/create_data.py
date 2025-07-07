@@ -9,12 +9,14 @@ from profile_service.utils.sql_request import get_user_id_profile
 from profile_service.database.base import SessionDep
 from profile_service.utils.sql_request import create_photo
 from profile_service.utils.sql_request import put_data_profile
-app = APIRouter(prefix='/profile_service', tags=['profile_service'])
+app = APIRouter(prefix='/profile', tags=['profile_service'])
 
 
 @app.post('/upload_photo')
-async def upload_file(session:SessionDep,user_id : int,file : UploadFile = File(...),key = Depends(get_access_token)):
-    if user_id != key.user_id:
+async def upload_file(session:SessionDep,user_id : int,
+                      file : UploadFile = File(...),
+                      token: dict = Depends(get_access_token)):
+    if user_id != token["user_id"]:
         raise HTTPException(status_code=403, detail='Пользователь не смог поменять данные другого человека')
     check_user = await  get_user_id_profile(user_id)
     if not check_user:
@@ -29,9 +31,7 @@ async def upload_file(session:SessionDep,user_id : int,file : UploadFile = File(
 
     file_name = file.filename
 
-    uploaded_at = datetime.now(timezone.utc)
-
-    new_photo = await create_photo(session,contents,file_name,file.content_type,uploaded_at,user_id,file_size)
+    new_photo = await create_photo(session,contents,file_name,file.content_type,user_id,file_size)
 
     return {"status":"ok"}
 
@@ -46,7 +46,6 @@ async def change_profile(
             detail="Данный пользователь не имеет права изменять данные другого id",
     )
     check_user = await get_user_id_profile(data.user_id)
-    print(check_user,'    получили юзера')
     if not check_user:
         raise HTTPException(status_code=400, detail="Данного id не существует")
 
