@@ -13,13 +13,13 @@ RUN apt-get update \
 RUN pip install --upgrade pip setuptools wheel \
     && pip install Cython
 
-COPY profile/requirements.txt .
+COPY profile_service/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY profile/alembic.ini ./profile/
+COPY profile_service/alembic.ini ./profile_service/
 
-COPY profile ./profile
+COPY profile_service ./profile_service
 
-CMD ["uvicorn", "profile.main:app", "--reload", "--host", "0.0.0.0", "--port", "8002"]
+CMD ["uvicorn", "profile_service.main:app", "--reload", "--host", "0.0.0.0", "--port", "8002"]
 

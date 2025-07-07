@@ -1,6 +1,6 @@
 from fastapi import HTTPException,Cookie,status
 import jwt
-from profile.database.redis import redis_client
+from profile_service.database.redis import redis_client
 
 from dotenv import load_dotenv
 import os
@@ -9,7 +9,6 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 
 async def get_access_token(access_token: str = Cookie(None, alias="access_token")):
-    print(access_token,'DDDDDDD')
     if not access_token:
         raise HTTPException(status_code=401, detail="Token is missing")
 

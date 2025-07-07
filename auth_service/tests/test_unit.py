@@ -17,7 +17,7 @@ async def test_registration_success(client, session):
     }
     response = await client.post("/registration", json=payload)
     assert response.status_code == 200
-    assert response.json()["message"] == "Успешный логин"
+    assert response.json()["message_service"] == "Успешный логин"
     assert "access_token" in response.cookies
     assert "refresh_token" in response.cookies
     result = await session.execute(select(User).filter_by(login="TestUser01"))

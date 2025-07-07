@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from profile.utils.sql_request import get_user_id, create_user_id
+from profile_service.utils.sql_request import get_user_id, create_user_id
 import asyncio
 from fastapi import FastAPI
 import json
@@ -9,7 +9,7 @@ from aiokafka import AIOKafkaConsumer
 from dotenv import load_dotenv
 
 
-from profile.database.base import SessionDep
+from profile_service.database.base import SessionDep
 from contextlib import asynccontextmanager
 
 load_dotenv()
@@ -33,9 +33,9 @@ async def consume_loop(consumer : AIOKafkaConsumer):
             if not await get_user_id(payload["user_id"]):
                 created_profile = await create_user_id(payload["user_id"], payload["login"])
                 logger.info(f"Created profile: {created_profile.id}")
-            logger.info(f"Consumed message: {payload}")
+            logger.info(f"Consumed message_service: {payload}")
         except json.JSONDecodeError:
-            logger.error("Failed to decode message", exc_info=True)
+            logger.error("Failed to decode message_service", exc_info=True)
 
         except Exception:
             logger.exception("Error in consume_loop")

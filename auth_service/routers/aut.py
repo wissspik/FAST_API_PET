@@ -60,7 +60,7 @@ async def registration(data: Registration,session:SessionDep):
         # создаем refresh токен
         refresh_token = await  create_refresh_token(new_user.id)
 
-        response = JSONResponse({"message": "Успешный логин"})
+        response = JSONResponse({"message_service": "Успешный логин"})
 
         logger.info(
             "A user has been created",
@@ -82,7 +82,7 @@ async def entrance(data:Authorization,session:SessionDep):
 
         refresh_token = await create_refresh_token(found_user.id)
 
-        response = JSONResponse({"message": "Успешный логин"})
+        response = JSONResponse({"message_service": "Успешный логин"})
 
         return create_cookie_file(response,access_token,refresh_token)
     else:
@@ -98,7 +98,7 @@ async def protect(access_token = Depends(get_access_token)):
     """
     return JSONResponse(
         status_code=status.HTTP_200_OK,
-        content={"message": "Пользователь аутентифицирован", "user_id": access_token['user_id']}
+        content={"message_service": "Пользователь аутентифицирован", "user_id": access_token['user_id']}
     )
 
 @app.get("/refresh")

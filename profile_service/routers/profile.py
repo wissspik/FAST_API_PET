@@ -1,13 +1,14 @@
 from fastapi import APIRouter,HTTPException,Depends
 
-from profile.database.base import SessionDep
-from profile.utils.sql_request import get_user_id
+from profile_service.database.base import SessionDep
+from profile_service.utils.sql_request import get_user_id_profile, get_user_id_photo
 
-app = APIRouter(tags=['profile'])
+app = APIRouter(tags=['profile_service'])
 
 @app.get("/profile/{user_id}")
 async def profile(user_id : int):
-    user = await get_user_id(user_id)
+    user = await get_user_id_profile(user_id)
+    user_photo = await get_user_id_photo(user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
     user_data = {
@@ -19,5 +20,7 @@ async def profile(user_id : int):
         'city': user.city,
         'age': user.age
     }
-    print('сейчас будет return')
-    return {'user_data':user_data}
+    if user_photo is None:
+        return {'user_data':user_data}
+    else:
+        ...

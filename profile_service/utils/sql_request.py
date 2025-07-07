@@ -1,18 +1,23 @@
-from profile.database.base import SessionDep
+from profile_service.database.base import SessionDep
 from sqlalchemy import select
-from profile.database.base import new_session
-from profile.database.models import Profile
+from profile_service.database.base import new_session
+from profile_service.database.models import Profile,Photo
 from sqlalchemy import update
 
-async def get_user_id(user_id: int) -> bool:
+async def get_user_id_profile(user_id: int) -> bool:
     async with new_session() as session:
         stml = select(Profile).filter_by(id=user_id)
         result = await session.execute(stml)
         found_user = result.scalar_one_or_none()
-        print(found_user)
         return found_user
 
 
+async def get_user_id_photo(user_id: int) -> bool:
+    async with new_session() as session:
+        stml = select(Photo).filter_by(id=user_id)
+        result = await session.execute(stml)
+        found_user = result.scalar_one_or_none()
+        return found_user
 # создавать автоматическое создание топиков
 
 
@@ -34,7 +39,7 @@ async def create_photo(
     await session.commit()
 
 async def put_data_profile(session : SessionDep,id : int,data : dict) -> bool:
-    user = await get_user_id(id)
+    user = await get_user_id_profile(id)
     stml = (
         update(Profile)
         .where(Profile.id == id)

@@ -9,4 +9,4 @@ app = APIRouter()
 async def setup_database():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    return {'message':True}
+    return {'message_service':True}

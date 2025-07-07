@@ -6,7 +6,7 @@ class Base(DeclarativeBase):
     pass
 
 class Profile(Base):
-    __tablename__ = 'profile'
+    __tablename__ = 'profile_service'
     id: Mapped[int] = mapped_column(primary_key=True)
     login: Mapped[str] = mapped_column(unique=False, index=True, nullable=False)
     name: Mapped[str] = mapped_column(unique=False, index=True, nullable=True)
@@ -21,7 +21,7 @@ class Profile(Base):
 
     photos = relationship(
         "Photo",
-        back_populates="profile",
+        back_populates="profile_service",
         cascade="all, delete-orphan"
     )
 
@@ -29,7 +29,7 @@ class Photo(Base):
     __tablename__ = 'photo'
     id: Mapped[int] = mapped_column(primary_key=True)
     profile_id: Mapped[int] = mapped_column(
-        ForeignKey('profile.id', ondelete='SET NULL', onupdate='CASCADE'),
+        ForeignKey('profile_service.id', ondelete='SET NULL', onupdate='CASCADE'),
         nullable=False
     )
     file_name: Mapped[str]    = mapped_column(nullable=False)

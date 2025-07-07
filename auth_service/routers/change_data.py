@@ -11,7 +11,7 @@ from auth_service.database.base import SessionDep
 
 load_dotenv()
 
-app = APIRouter(prefix="/profile")
+app = APIRouter(prefix="/profile_service")
 
 @app.put("/change_password")
 async def change_password(session:SessionDep,data:ChangePassword):
@@ -34,7 +34,7 @@ async def change_login(response : Response,session:SessionDep,data:ChangeLogin):
         response.delete_cookie("refresh_token", path="/")
         access_token = await create_access_token(result)
         refresh_token = await create_refresh_token(result)
-        response = JSONResponse({"message": "Успешная смена пароя"})
+        response = JSONResponse({"message_service": "Успешная смена пароя"})
         return create_cookie_file(response, access_token, refresh_token)
     else:
         return JSONResponse(status_code=400,detail="Некорректный id у пользователя")

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from profile.database.base import engine
-from profile.database.models import Base
+from profile_service.database.base import engine
+from profile_service.database.models import Base
 app = APIRouter()
 
 @app.post("/create_all_tables",
@@ -9,4 +9,4 @@ app = APIRouter()
 async def setup_database():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    return {'message':True}
+    return {'message_service':True}

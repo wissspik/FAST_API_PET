@@ -37,13 +37,13 @@ docker compose -f auth_service/docker-compose_auth.yml up -d
 ```
 
 ```bash
-docker compose -f profile/docker-compose_profile.yml up -d
+docker compose -f profile_service/docker-compose_profile.yml up -d
 ```
 
 Launch the API gateway locally:
 
 ```bash
-uvicorn apigateway.gateway:app --reload --port 8000
+uvicorn apigateway_service.gateway:app --reload --port 8000
 ```
 
 After the containers are running the APIs will be available on ports `8001` and `8002`. The gateway listens on `8000`.

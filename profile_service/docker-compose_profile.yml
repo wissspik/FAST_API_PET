@@ -3,9 +3,9 @@ services:
     container_name: service_profile
     build:
       context: .
-      dockerfile: profile/Dockerfile
+      dockerfile: profile_service/Dockerfile
     env_file:
-      - profile/.env
+      - profile_service/.env
     depends_on:
       kafka:
         condition: service_healthy

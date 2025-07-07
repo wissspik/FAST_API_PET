@@ -28,7 +28,7 @@ class KafkaLogHandler(logging.Handler):
         log_entry = {
             "timestamp": datetime.utcfromtimestamp(record.created).isoformat() + "Z", # время
             "level": record.levelname, # важность лога
-            "message": record.getMessage(), # сообщение в логе
+            "message_service": record.getMessage(), # сообщение в логе
             "module": record.module, # имя модуля откуда будет идти log
             "funcName": record.funcName, # место, где лог бы создан
             "lineNo": record.lineno, # номер строки с вызовом
