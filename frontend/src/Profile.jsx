@@ -135,9 +135,8 @@ function Profile() {
     if (!file) return
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('data', JSON.stringify({ user_id: 1 }))
     try {
-      await fetch('http://localhost:8001/profile/data', {
+      await fetch(`http://localhost:8002/profile/upload_photo?user_id=${currentUserId}`, {
         method: 'POST',
         body: formData,
         credentials: 'include',
