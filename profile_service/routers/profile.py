@@ -12,9 +12,9 @@ app = APIRouter(tags=["profile_service"])
 
 
 @app.get("/profile/{user_id}")
-async def profile(user = Depends(get_access_token)):
-    user = await get_user_id_profile(user.id)
-    user_photo = await get_user_id_photo(user.id)
+async def profile(user_id : int = Depends(get_access_token)):
+    user = await get_user_id_profile(user_id)
+    user_photo = await get_user_id_photo(user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
     user_data = {

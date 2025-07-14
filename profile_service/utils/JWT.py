@@ -48,4 +48,4 @@ async def get_access_token(access_token: str = Cookie(None, alias="access_token"
     if exp is None:
         raise HTTPException(status_code=401, detail="Token missing jti")
     # Возвращаем user_id из токена
-    return {"user_id": int(user_id)}
+    return int(user_id)

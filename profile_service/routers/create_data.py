@@ -52,9 +52,8 @@ async def upload_file(
 
 @app.put("/change_profile")
 async def change_profile(
-    session: SessionDep, data: ChangeProfile, token: dict = Depends(get_access_token)
-):
-    if token["user_id"] != data.user_id:
+    session: SessionDep, data: ChangeProfile, user_id: int = Depends(get_access_token)):
+    if user_id != data.user_id:
         raise HTTPException(
             status_code=400,
             detail="Данный пользователь не имеет права изменять данные другого id",
