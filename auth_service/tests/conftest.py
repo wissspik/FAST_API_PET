@@ -1,7 +1,10 @@
 import os
+
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine,)
+
 
 # Set required environment variables before importing the application
 os.environ.setdefault("DB_USER", "user")
@@ -17,11 +20,13 @@ os.environ.setdefault("SECRET_KEY", "TEST_SECRET")
 os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "15")
 os.environ.setdefault("REFRESH_TOKEN_EXPIRE_DAYS", "7")
 
+from auth_service.database.base import get_session
 from auth_service.database.models import Base
 from auth_service.main import app
-from auth_service.database.base import get_session
+
 
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite+aiosqlite:///:memory:")
+
 
 @pytest_asyncio.fixture
 async def session():
@@ -33,21 +38,24 @@ async def session():
         yield session
     await engine.dispose()
 
+
 @pytest_asyncio.fixture
 async def client(session, monkeypatch):
     class DummyRedis:
         def set(self, *a, **k):
             pass
+
         def delete(self, *a, **k):
             pass
+
         def exists(self, *a, **k):
             return False
 
     dummy = DummyRedis()
     import auth_service.database.redis as db_redis
-    import auth_service.utils.sql_request as sql_req
-    import auth_service.utils.JWT as jwt_utils
     import auth_service.routers.aut as aut_router
+    import auth_service.utils.JWT as jwt_utils
+    import auth_service.utils.sql_request as sql_req
 
     monkeypatch.setattr(db_redis, "redis_client", dummy)
     monkeypatch.setattr(sql_req, "redis_client", dummy)
@@ -76,6 +84,8 @@ async def client(session, monkeypatch):
     monkeypatch.setattr(aut_router, "create_cookie_file", sync_create_cookie_file)
 
     app.dependency_overrides[get_session] = lambda: session
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         yield ac
     app.dependency_overrides.clear()

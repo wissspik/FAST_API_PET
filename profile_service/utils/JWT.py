@@ -1,18 +1,21 @@
-from fastapi import HTTPException,Cookie,status
+import os
+
 import jwt
+from dotenv import load_dotenv
+from fastapi import Cookie, HTTPException, status
+
 from profile_service.database.redis import redis_client
 
-from dotenv import load_dotenv
-import os
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
+
 
 async def get_access_token(access_token: str = Cookie(None, alias="access_token")):
     if not access_token:
         raise HTTPException(status_code=401, detail="Token is missing")
 
-    #1)Декодируем
+    # 1)Декодируем
     try:
         payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
     except jwt.ExpiredSignatureError:
@@ -33,8 +36,7 @@ async def get_access_token(access_token: str = Cookie(None, alias="access_token"
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token has been revoked",
-
-    )
+        )
     user_id = payload.get("sub")
 
     if not user_id:
@@ -44,8 +46,6 @@ async def get_access_token(access_token: str = Cookie(None, alias="access_token"
         )
     exp = payload.get("exp")
     if exp is None:
-        raise HTTPException(
-            status_code=401, detail="Token missing jti"
-        )
+        raise HTTPException(status_code=401, detail="Token missing jti")
     # Возвращаем user_id из токена
-    return {'user_id':int(user_id)}
+    return {"user_id": int(user_id)}

@@ -1,14 +1,14 @@
-from logging.config import fileConfig
 import os
+from logging.config import fileConfig
 
 import alembic
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
-from dotenv import load_dotenv
 from alembic import context
+from dotenv import load_dotenv
+from sqlalchemy import engine_from_config, pool
 
 from auth_service.database.models import Base
+
+
 config = context.config
 
 load_dotenv()
@@ -17,20 +17,21 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 
-
 target_metadata = Base.metadata
 
 async_url = (
     f"postgresql+asyncpg://{os.getenv('DB_USER')}:"
     f"{os.getenv('DB_PASSWORD')}@"
     f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/"
-    f"{os.getenv('DB_NAME')}")
+    f"{os.getenv('DB_NAME')}"
+)
 
 sync_url = async_url.replace("+asyncpg", "+psycopg2")
 
 config.set_main_option("sqlalchemy.url", sync_url)
 
-config.set_main_option("script_location","auth_service/alembic")
+config.set_main_option("script_location", "auth_service/alembic")
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
@@ -70,9 +71,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

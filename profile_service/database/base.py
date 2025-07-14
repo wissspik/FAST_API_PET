@@ -1,8 +1,12 @@
-from sqlalchemy.ext.asyncio import create_async_engine,async_sessionmaker,AsyncSession
-from typing import Annotated
-from fastapi.params import Depends
 import os
+from typing import Annotated
+
 from dotenv import load_dotenv
+from fastapi.params import Depends
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine,)
+
+
 load_dotenv()
 
 DATABASE_URL = (
@@ -10,12 +14,14 @@ DATABASE_URL = (
     f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
 )
 
-engine = create_async_engine(DATABASE_URL,echo=True)
+engine = create_async_engine(DATABASE_URL, echo=True)
 
-new_session = async_sessionmaker(engine,expire_on_commit= False)
+new_session = async_sessionmaker(engine, expire_on_commit=False)
+
 
 async def get_session():
     async with new_session() as session:
         yield session
 
-SessionDep = Annotated[AsyncSession,Depends(get_session)]
+
+SessionDep = Annotated[AsyncSession, Depends(get_session)]

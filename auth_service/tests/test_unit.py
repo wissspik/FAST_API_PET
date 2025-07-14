@@ -1,11 +1,11 @@
 import pytest
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import select
 
-from auth_service.main import app
-from auth_service.database.models import User
-from auth_service.utils.password_val_hash import hash_password
 from auth_service.database.base import get_session
+from auth_service.database.models import User
+from auth_service.main import app
+from auth_service.utils.password_val_hash import hash_password
 
 
 @pytest.mark.asyncio
@@ -48,4 +48,7 @@ async def test_registration_existing_user(client, session):
     }
     response = await client.post("/registration", json=payload)
     assert response.status_code == 409
-    assert response.json()["detail"] == "Пользователь с таким логином уже существует, придумайте другой"
+    assert (
+        response.json()["detail"]
+        == "Пользователь с таким логином уже существует, придумайте другой"
+    )
