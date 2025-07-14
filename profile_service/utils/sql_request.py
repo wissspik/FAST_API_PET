@@ -15,7 +15,7 @@ async def get_user_id_profile(user_id: int) -> bool:
 
 async def get_user_id_photo(user_id: int) -> bool:
     async with new_session() as session:
-        stml = select(Photo).filter_by(id=user_id)
+        stml = select(Photo).filter_by(profile_id=user_id)
         result = await session.execute(stml)
         found_user = result.scalar_one_or_none()
         return found_user

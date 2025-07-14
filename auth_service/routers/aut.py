@@ -141,7 +141,3 @@ async def logout(
     response.delete_cookie("refresh_token", path="/")
 
     return {"detail": "Logged out successfully"}
-
-
-# сделать форму ввода данных
-# сделать api gateway
