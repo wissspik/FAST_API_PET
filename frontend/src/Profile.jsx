@@ -38,6 +38,7 @@ function Profile() {
     const isOwnProfile = !userId || Number(userId) === currentUserId
   const [menuOpen, setMenuOpen] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [notFound, setNotFound] = useState(false)
 
   const [name, setName] = useState('')
   const [surname, setSurname] = useState('')
@@ -103,6 +104,9 @@ function Profile() {
         setEditAge(String(user_data.age || ''))
         setEditCity(user_data.city || '')
         setEditGender(user_data.gender || 'male')
+        setNotFound(false)
+      } else {
+        setNotFound(true)
       }
     }
 
@@ -216,6 +220,11 @@ function Profile() {
       <div className="divider w-px bg-white/10" />
 
       <main className="flex-1 bg-dark-900 p-6 overflow-y-auto">
+        {notFound ? (
+          <div className="flex items-center justify-center h-full text-xl">
+            Такого пользователя нет
+          </div>
+        ) : (
         <div className="profile-container mx-auto">
           <div className="profile-card">
             <div className="profile-photo">
@@ -288,11 +297,14 @@ function Profile() {
               ) : null}
             </div>
           </div>
-          <div className="friend-actions">
-            <button className="add-friend-btn">Добавить в друзья</button>
-            <button className="send-message-btn">Написать сообщение</button>
-          </div>
+          {!isOwnProfile && (
+            <div className="friend-actions">
+              <button className="add-friend-btn">Добавить в друзья</button>
+              <button className="send-message-btn">Написать сообщение</button>
+            </div>
+          )}
         </div>
+        )}
       </main>
 
       <div className="divider w-px bg-white/10" />
