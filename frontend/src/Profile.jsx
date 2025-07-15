@@ -35,9 +35,17 @@ function Profile() {
   const navigate = useNavigate()
   const { userId } = useParams()
   const [currentUserId, setCurrentUserId] = useState(null)
-    const isOwnProfile = !userId || Number(userId) === currentUserId
+  const isOwnProfile = !userId || Number(userId) === currentUserId
   const [menuOpen, setMenuOpen] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [status, setStatus] = useState('unactivate')
+
+  const sendVisit = async () => {
+    await fetch('http://localhost:8002/visit_time', {
+      method: 'POST',
+      credentials: 'include',
+    })
+  }
   const [notFound, setNotFound] = useState(false)
 
   const [name, setName] = useState('')
@@ -74,6 +82,8 @@ function Profile() {
 
       if (idFromProtected !== undefined) setCurrentUserId(idFromProtected)
 
+      await sendVisit()
+
       const id = userId || idFromProtected
 
       if (!userId && id) {
@@ -105,6 +115,15 @@ function Profile() {
         setEditCity(user_data.city || '')
         setEditGender(user_data.gender || 'male')
         setNotFound(false)
+        const statusRes = await fetch('http://localhost:8002/check_time', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: id }),
+        })
+        if (statusRes.ok) {
+          const { status } = await statusRes.json()
+          setStatus(status)
+        }
       } else {
         setNotFound(true)
       }
@@ -118,11 +137,12 @@ function Profile() {
       label: 'Профиль',
       Icon: ProfileIcon,
       onClick: () => {
+        sendVisit()
         if (currentUserId) navigate(`/profile/${currentUserId}`)
       },
     },
-    { label: 'Лента', Icon: FeedIcon, onClick: () => navigate('/feed') },
-    { label: 'Мессенджер', Icon: MessageIcon },
+    { label: 'Лента', Icon: FeedIcon, onClick: () => { sendVisit(); navigate('/feed') } },
+    { label: 'Мессенджер', Icon: MessageIcon, onClick: sendVisit },
     { label: 'Помощь', Icon: HelpIcon },
   ]
 
@@ -190,6 +210,7 @@ function Profile() {
         setCity(editCity)
         setAge(editAge)
         setShowForm(false)
+        await sendVisit()
       }
     } catch (err) {
       console.error(err)
@@ -234,6 +255,9 @@ function Profile() {
                 ) : (
                   <i className="fas fa-user-circle" />
                 )}
+                <span
+                  className={`status-dot ${status === 'activate' ? 'bg-green-500' : 'bg-gray-500'}`}
+                />
               </div>
               {isOwnProfile && (
                 <>
@@ -313,7 +337,10 @@ function Profile() {
         <div className="flex justify-end relative">
           <div
             className="profile-icon w-10 h-10 rounded-full bg-dark-700 flex items-center justify-center cursor-pointer"
-            onClick={() => setMenuOpen((v) => !v)}
+            onClick={() => {
+              sendVisit()
+              setMenuOpen((v) => !v)
+            }}
           >
             <i className="fas fa-user text-lg" />
           </div>
