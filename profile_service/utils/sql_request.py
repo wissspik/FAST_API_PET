@@ -78,6 +78,7 @@ async def put_data_profile(session: SessionDep, id: int, data: dict) -> bool:
         return True
     else:
         return False
+
 async def add_redis(key : Any, value: Any,exp: int | None = None) -> None:
     redis_client.set(key, value,ex=exp)
 
@@ -85,4 +86,4 @@ async def delete_redis(key : Any) -> None:
     redis_client.delete(key)
 
 async def get_redis(key: Any) -> bool:
-    return bool(await redis_client.exists(key))
+    return await redis_client.exists(key)

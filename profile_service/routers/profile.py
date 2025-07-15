@@ -1,5 +1,5 @@
 import base64
-from datetime import datetime
+from datetime import datetime,timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -47,6 +47,30 @@ async def time_visit(user_id: int = Depends(get_access_token)):
     else:
         time_now = datetime.now()
         await add_redis(user_id,time_now)
+@app.post("/check_time")
+async def check_time(user_id: int):
+    time_now = datetime.now()
+    client = await get_redis(user_id)
+    if client is None:
+        # Если записи нет — считаем, что пользователь заходит впервые
+        # Можно сразу записать текущее время и возвращать успех
+        await add_redis(user_id,time_now)
+        return {"user": True, "reason": "first_visit"}
+    last_visit_str = client.decode("utf-8")
+
+    last_visit = datetime.fromisoformat(last_visit_str)
+
+    delta = time_now - last_visit
+
+    if delta > timedelta(minutes=5):
+        # Если прошло больше 5 минут — пользователь не в сети
+        return {"status":"unactivate"}
+    else:
+        return {"status":"activate"}
+
+
+
+
 
 # добавить к ручкам успешного логирования,к переходу на ленту,
 # к переходу на профиль

@@ -11,3 +11,7 @@ frontend/dist/
 # Others
 .env
 
+.gitignore
+.black
+.flake8
+.isort.cfg
