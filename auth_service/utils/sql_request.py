@@ -108,22 +108,15 @@ async def delete_user(session: SessionDep, login: str) -> bool:
 
 def add_jti_redis(jti, token, expire_seconds) -> bool:
     try:
-        # если используете асинхронный клиент redis-py:
         redis_client.set(jti, token, ex=expire_seconds)
     except RedisError as e:
         logger.error(f"Не удалось сохранить JTI {jti} в Redis: {e}", exc_info=True)
         return False
     except Exception as e:
-        # на всякий случай поймаем все остальные исключения
         logger.error(f"Неожиданная ошибка при сохранении JTI {jti}: {e}", exc_info=True)
         return False
 
     return True
 
-
-def get_jti_redis() -> bool:
-    return True
-
-
-def delete_redis(data: str) -> bool:
-    redis_client.delete(data)
+def delete_redis(key: str) -> None:
+    redis_client.delete(key)

@@ -1,7 +1,11 @@
 from sqlalchemy import select, update
 
+from profile_service.database.redis import redis_client
+
 from profile_service.database.base import SessionDep, new_session
 from profile_service.database.models import Photo, Profile
+
+from typing import Any
 
 
 async def get_user_id_profile(user_id: int) -> bool:
@@ -74,3 +78,11 @@ async def put_data_profile(session: SessionDep, id: int, data: dict) -> bool:
         return True
     else:
         return False
+async def add_redis(key : Any, value: Any,exp: int | None = None) -> None:
+    redis_client.set(key, value,ex=exp)
+
+async def delete_redis(key : Any) -> None:
+    redis_client.delete(key)
+
+async def get_redis(key: Any) -> bool:
+    return bool(await redis_client.exists(key))

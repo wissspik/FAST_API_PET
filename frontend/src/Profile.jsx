@@ -84,7 +84,7 @@ function Profile() {
         credentials: 'include',
       })
       if (profileRes.ok) {
-        const { user_data } = await profileRes.json()
+        const user_data = await profileRes.json()
         setLogin(user_data.login || '')
         setName(user_data.name || '')
         setSurname(user_data.surname || '')
