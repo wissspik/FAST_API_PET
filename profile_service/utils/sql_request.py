@@ -1,31 +1,24 @@
 from sqlalchemy import select, update
 
 from profile_service.database.redis import redis_client
-
 from profile_service.database.base import SessionDep, new_session
 from profile_service.database.models import Photo, Profile
 
 from typing import Any
 
 
-async def get_user_id_profile(user_id: int) -> bool:
+async def get_user_id_profile(user_id: int) -> Profile | None:
     async with new_session() as session:
-        print("Получаем юзера")
         stml = select(Profile).filter_by(id=user_id)
         result = await session.execute(stml)
-        found_user = result.scalar_one_or_none()
-        return found_user
+        return result.scalar_one_or_none()
 
 
-async def get_user_id_photo(user_id: int) -> bool:
+async def get_user_id_photo(user_id: int) -> Photo | None:
     async with new_session() as session:
         stml = select(Photo).filter_by(profile_id=user_id)
         result = await session.execute(stml)
-        found_user = result.scalar_one_or_none()
-        return found_user
-
-
-# создавать автоматическое создание топиков
+        return result.scalar_one_or_none()
 
 
 async def create_user_id(user_id: int, login: str) -> Profile:
@@ -56,7 +49,6 @@ async def create_photo(
 
 
 async def put_data_profile(session: SessionDep, id: int, data: dict) -> bool:
-    user = await get_user_id_profile(id)
     stml = (
         update(Profile)
         .where(Profile.id == id)
@@ -73,17 +65,16 @@ async def put_data_profile(session: SessionDep, id: int, data: dict) -> bool:
     )
     result = await session.execute(stml)
     await session.commit()
-    user = result.scalar_one_or_none()
-    if user is not None:
-        return True
-    else:
-        return False
+    return result.scalar_one_or_none() is not None
 
-async def add_redis(key : Any, value: Any,exp: int | None = None) -> None:
-    redis_client.set(key, value,ex=exp)
 
-async def delete_redis(key : Any) -> None:
+async def add_redis(key: Any, value: Any, exp: int | None = None) -> None:
+    redis_client.set(key, value, ex=exp)
+
+
+async def delete_redis(key: Any) -> None:
     redis_client.delete(key)
 
-async def get_redis(key: Any) -> bool:
-    return await redis_client.exists(key)
+
+async def get_redis(key: Any):
+    return redis_client.get(key)

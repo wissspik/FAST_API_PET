@@ -46,6 +46,13 @@ function Feed() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [currentUserId, setCurrentUserId] = useState(null)
 
+  const sendVisit = async () => {
+    await fetch('http://localhost:8002/visit_time', {
+      method: 'POST',
+      credentials: 'include',
+    })
+  }
+
   useEffect(() => {
     const checkAuth = async () => {
       const id = await getUserId()
@@ -54,6 +61,10 @@ function Feed() {
         return
       }
       if (id !== undefined) setCurrentUserId(id)
+      await fetch('http://localhost:8002/visit_time', {
+        method: 'POST',
+        credentials: 'include',
+      })
     }
 
     checkAuth()
@@ -72,11 +83,12 @@ function Feed() {
       label: 'Профиль',
       Icon: ProfileIcon,
       onClick: () => {
+        sendVisit()
         if (currentUserId) navigate(`/profile/${currentUserId}`)
       },
     },
-    { label: 'Лента', Icon: FeedIcon },
-    { label: 'Мессенджер', Icon: MessageIcon },
+    { label: 'Лента', Icon: FeedIcon, onClick: () => { sendVisit(); } },
+    { label: 'Мессенджер', Icon: MessageIcon, onClick: sendVisit },
     { label: 'Помощь', Icon: HelpIcon },
   ]
 
@@ -119,7 +131,10 @@ function Feed() {
         <div className="flex justify-end relative">
           <div
             className="profile-icon w-10 h-10 rounded-full bg-dark-700 flex items-center justify-center cursor-pointer"
-            onClick={() => setMenuOpen((v) => !v)}
+            onClick={() => {
+              sendVisit()
+              setMenuOpen((v) => !v)
+            }}
           >
             <i className="fas fa-user text-lg" />
           </div>
