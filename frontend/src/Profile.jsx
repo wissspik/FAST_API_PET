@@ -41,7 +41,7 @@ function Profile() {
   const [status, setStatus] = useState('unactivate')
 
   const sendVisit = async () => {
-    await fetch('http://localhost:8002/visit_time', {
+    await fetch('http://localhost:8002/record_visit_time', {
       method: 'POST',
       credentials: 'include',
     })
@@ -115,10 +115,8 @@ function Profile() {
         setEditCity(user_data.city || '')
         setEditGender(user_data.gender || 'male')
         setNotFound(false)
-        const statusRes = await fetch('http://localhost:8002/check_time', {
+        const statusRes = await fetch(`http://localhost:8002/check_time?user_id=${id}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: id }),
         })
         if (statusRes.ok) {
           const { status } = await statusRes.json()
