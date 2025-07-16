@@ -45,7 +45,7 @@ function Login() {
       body: JSON.stringify({ login: username, password }),
     })
     if (response.ok) {
-      await fetch('http://localhost:8002/visit_time', {
+      await fetch('http://localhost:8002/record_visit_time', {
         method: 'POST',
         credentials: 'include',
       })

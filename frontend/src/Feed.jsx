@@ -47,7 +47,7 @@ function Feed() {
   const [currentUserId, setCurrentUserId] = useState(null)
 
   const sendVisit = async () => {
-    await fetch('http://localhost:8002/visit_time', {
+    await fetch('http://localhost:8002/record_visit_time', {
       method: 'POST',
       credentials: 'include',
     })
@@ -61,7 +61,7 @@ function Feed() {
         return
       }
       if (id !== undefined) setCurrentUserId(id)
-      await fetch('http://localhost:8002/visit_time', {
+      await fetch('http://localhost:8002/record_visit_time', {
         method: 'POST',
         credentials: 'include',
       })

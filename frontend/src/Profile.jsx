@@ -41,7 +41,7 @@ function Profile() {
   const [status, setStatus] = useState('unactivate')
 
   const sendVisit = async () => {
-    await fetch('http://localhost:8002/visit_time', {
+    await fetch('http://localhost:8002/record_visit_time', {
       method: 'POST',
       credentials: 'include',
     })
