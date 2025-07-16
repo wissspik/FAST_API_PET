@@ -1,5 +1,5 @@
 import base64
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta,timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -35,33 +35,29 @@ async def profile(user_id: int, user_id_token: int = Depends(get_access_token)):
         "file_size": user_photo.file_size if user_photo else None,
     }
     return user_data
-@app.post("/visit_time")
+@app.post("/record_visit_time")
 async def time_visit(user_id: int = Depends(get_access_token)):
     user = await get_user_id_profile(user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
-    if await get_redis(user_id):
-        await delete_redis(user_id)
-    time_now = datetime.now()
+    time_now = datetime.now(timezone.utc)
     await add_redis(user_id, time_now.isoformat())
 
 @app.post("/check_time")
 async def check_time(user_id: int):
-    time_now = datetime.now()
+    time_now = datetime.now(timezone.utc)
     client = await get_redis(user_id)
     if client is None:
-        # Если записи нет — считаем, что пользователь заходит впервые
-        # Можно сразу записать текущее время и возвращать успех
-        await add_redis(user_id,time_now)
-
-    last_visit_str = client.decode("utf-8")
-
-    last_visit = datetime.fromisoformat(last_visit_str)
+        return HTTPException(status_code=404, detail="Данный пользователь не зарегистирован на сайте")
+    try:
+        last_visit = datetime.fromisoformat(client.decode("utf-8"))
+    except ValueError:
+        return {"status": "error", "detail": "Неверный формат времени"}
 
     delta = time_now - last_visit
 
     if delta > timedelta(minutes=5):
-        # Если прошло больше 5 минут — пользователь не в сети
-        return {"status":"unactivate"}
+        return {"status": "unactivate"}
     else:
-        return {"status":"activate"}
+        return {"status": "activate"}
+
