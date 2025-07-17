@@ -273,3 +273,9 @@ body {
     min-height: 120px;
     resize: vertical;
 }
+
+/* Wider modal specifically for creating articles */
+.article-modal {
+    max-width: 650px;
+}
+

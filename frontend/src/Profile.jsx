@@ -526,7 +526,8 @@ function Profile() {
       )}
       {showArticleForm && (
         <div className="modal-overlay">
-          <div className="modal max-w-2xl w-full">
+          <div className="modal article-modal">
+
             <button className="close-btn" onClick={() => setShowArticleForm(false)}>
               &times;
             </button>
