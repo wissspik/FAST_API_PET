@@ -13,6 +13,13 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+.left-column,
+.right-column {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
 .profile-photo-placeholder {
     background-color: #e5e7eb;
     display: flex;
@@ -277,5 +284,18 @@ body {
 /* Wider modal specifically for creating articles */
 .article-modal {
     max-width: 650px;
+}
+
+.article-tile {
+    background-color: #374151;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.tag {
+    background-color: #4b5563;
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
 }
 
