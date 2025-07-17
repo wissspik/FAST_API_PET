@@ -290,6 +290,38 @@ body {
     background-color: #374151;
     padding: 1rem;
     border-radius: 0.5rem;
+    position: relative;
+}
+
+.article-options {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    color: #9ca3af;
+    cursor: pointer;
+}
+
+.article-options:hover {
+    color: #ffffff;
+}
+
+.article-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.75rem;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+}
+
+.action-btn:hover {
+    color: #ffffff;
 }
 
 .tag {
