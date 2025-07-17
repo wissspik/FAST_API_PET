@@ -89,9 +89,29 @@ function Profile() {
   const [articleSubtitle, setArticleSubtitle] = useState('')
   const [articleContent, setArticleContent] = useState('')
   const [articleTags, setArticleTags] = useState([])
+  const [articles, setArticles] = useState([])
 
   const fileInputRef = useRef(null)
   const [photoSrc, setPhotoSrc] = useState(null)
+
+  const fetchArticles = async (id) => {
+    try {
+      const res = await fetch('http://localhost:8003/profile/take_article', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ user_id: id }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setArticles(data)
+      } else {
+        setArticles([])
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -142,6 +162,7 @@ function Profile() {
         if (statusRes.ok) {
           const { status } = await statusRes.json()
           setStatus(status)
+          await fetchArticles(id)
         }
       } else {
         setNotFound(true)
@@ -249,7 +270,7 @@ function Profile() {
     })
   }
 
-  const handleArticleSubmit = (e) => {
+  const handleArticleSubmit = async (e) => {
     e.preventDefault()
     if (articleTags.length > 5) {
       alert('Пожалуйста, выберите не более 5 интересов')
@@ -261,8 +282,20 @@ function Profile() {
       content: articleContent,
       tags: articleTags,
     }
-    console.log('Article data:', data)
-    alert('Статья успешно создана!')
+    try {
+      const res = await fetch('http://localhost:8003/profile/create_article', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      })
+      if (res.ok) {
+        await fetchArticles(currentUserId)
+        alert('Статья успешно создана!')
+      }
+    } catch (err) {
+      console.error(err)
+    }
     setShowArticleForm(false)
     setArticleTitle('')
     setArticleSubtitle('')
@@ -383,6 +416,22 @@ function Profile() {
               <button className="send-message-btn">Написать сообщение</button>
             </div>
           )}
+          <div className="articles-container mt-6 space-y-4">
+            {articles.map((a, idx) => (
+              <div key={idx} className="article-tile bg-gray-700 p-4 rounded-lg">
+                <h3 className="text-xl font-bold mb-1">{a.title}</h3>
+                <h4 className="text-gray-300 mb-2">{a.subtitle}</h4>
+                <p className="text-gray-200 mb-2">{a.content}</p>
+                <div className="flex flex-wrap gap-2">
+                  {a.tags?.map((t) => (
+                    <span key={t} className="tag bg-gray-600 px-2 py-1 rounded text-sm">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
         )}
       </main>
