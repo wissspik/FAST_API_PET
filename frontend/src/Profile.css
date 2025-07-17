@@ -262,3 +262,19 @@ body {
 .send-message-btn:hover {
     background-color: #a370d8;
 }
+
+.tag-input:checked + .tag-label {
+    background-color: #1d4ed8;
+    color: white;
+    border-color: #1d4ed8;
+}
+
+.content-field {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Wider modal specifically for creating articles */
+.article-modal {
+    max-width: 650px;
+}
