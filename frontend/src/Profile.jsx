@@ -418,7 +418,10 @@ function Profile() {
           )}
           <div className="articles-container mt-6 space-y-4">
             {articles.map((a, idx) => (
-              <div key={idx} className="article-tile bg-gray-700 p-4 rounded-lg">
+              <div key={idx} className="article-tile bg-gray-700 p-4 rounded-lg relative">
+                <div className="article-options">
+                  <i className="fas fa-ellipsis-h" />
+                </div>
                 <h3 className="text-xl font-bold mb-1">{a.title}</h3>
                 <h4 className="text-gray-300 mb-2">{a.subtitle}</h4>
                 <p className="text-gray-200 mb-2">{a.content}</p>
@@ -428,6 +431,14 @@ function Profile() {
                       {t}
                     </span>
                   ))}
+                </div>
+                <div className="article-actions">
+                  <button className="action-btn like-btn">
+                    <i className="far fa-heart mr-1" /> Лайк
+                  </button>
+                  <button className="action-btn comment-btn">
+                    <i className="far fa-comment mr-1" /> Комментарий
+                  </button>
                 </div>
               </div>
             ))}
