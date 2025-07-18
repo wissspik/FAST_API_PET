@@ -163,8 +163,8 @@ function Profile() {
         if (statusRes.ok) {
           const { status } = await statusRes.json()
           setStatus(status)
-          await fetchArticles(id)
         }
+        await fetchArticles(id)
       } else {
         setNotFound(true)
       }
@@ -419,7 +419,7 @@ function Profile() {
           )}
           <div className="articles-container mt-6 space-y-4">
             {articles.map((a, idx) => (
-              <div key={idx} className="article-tile bg-gray-700 p-4 rounded-lg relative">
+              <div key={idx} className="article-tile p-4 rounded-lg relative">
                 <div className="article-options">
                   <i className="fas fa-ellipsis-h" />
                 </div>
