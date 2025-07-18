@@ -1,18 +1,18 @@
 services:
   service_profile:
-    container_name: profile_service
+    container_name: article_service
     build:
       context: .
-      dockerfile: profile_service/Dockerfile
+      dockerfile: article_service/Dockerfile
     env_file:
-      - profile_service/.env
+      - article_service/.env
     depends_on:
       kafka:
         condition: service_healthy
       postgres:
         condition: service_started
     ports:
-      - "8002:8002"
+      - "8003:8003"
     networks:
       - kong-net
 networks:
