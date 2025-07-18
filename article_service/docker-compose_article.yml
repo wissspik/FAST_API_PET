@@ -1,5 +1,5 @@
 services:
-  service_profile:
+  service_article:
     container_name: article_service
     build:
       context: .
