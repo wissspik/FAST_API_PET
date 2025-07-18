@@ -4,7 +4,7 @@ import jwt
 from dotenv import load_dotenv
 from fastapi import Cookie, HTTPException, status
 
-from profile_service.database.redis import redis_client
+from article_service.database.redis import redis_client
 load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")

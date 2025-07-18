@@ -6,7 +6,7 @@ from datetime import datetime,timezone
 
 from article_service.utils.JWT import get_access_token
 
-from article_service.database.db import db
+from article_service.database.mongo import db
 
 
 app = APIRouter()
@@ -23,7 +23,7 @@ async def create_article(article: Article,user_id : int = Depends(get_access_tok
 @app.post("/profile/take_article")
 async def take_article(user_id : int):
     cursor = db[str(user_id)].find({})
-    articles = await cursor.to_list(length=None)  # length=None — без ограничений
+    articles = await cursor.to_list(length=None)
     if not articles:
         raise HTTPException(status_code=404, detail="Статей не найдено")
     return articles
