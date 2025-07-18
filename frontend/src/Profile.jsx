@@ -96,12 +96,13 @@ function Profile() {
 
   const fetchArticles = async (id) => {
     try {
-      const res = await fetch('http://localhost:8003/profile/take_article', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ user_id: id }),
-      })
+      const res = await fetch(
+        `http://localhost:8003/profile/take_article?user_id=${id}`,
+        {
+          method: 'POST',
+          credentials: 'include',
+        },
+      )
       if (res.ok) {
         const data = await res.json()
         setArticles(data)
@@ -162,8 +163,8 @@ function Profile() {
         if (statusRes.ok) {
           const { status } = await statusRes.json()
           setStatus(status)
-          await fetchArticles(id)
         }
+        await fetchArticles(id)
       } else {
         setNotFound(true)
       }
@@ -418,7 +419,7 @@ function Profile() {
           )}
           <div className="articles-container mt-6 space-y-4">
             {articles.map((a, idx) => (
-              <div key={idx} className="article-tile bg-gray-700 p-4 rounded-lg relative">
+              <div key={idx} className="article-tile p-4 rounded-lg relative">
                 <div className="article-options">
                   <i className="fas fa-ellipsis-h" />
                 </div>
