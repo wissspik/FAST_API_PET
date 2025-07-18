@@ -96,12 +96,13 @@ function Profile() {
 
   const fetchArticles = async (id) => {
     try {
-      const res = await fetch('http://localhost:8003/profile/take_article', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ user_id: id }),
-      })
+      const res = await fetch(
+        `http://localhost:8003/profile/take_article?user_id=${id}`,
+        {
+          method: 'POST',
+          credentials: 'include',
+        },
+      )
       if (res.ok) {
         const data = await res.json()
         setArticles(data)
