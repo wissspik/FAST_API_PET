@@ -25,6 +25,13 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 REFRESH_TOKEN_EXPIRE_DAYS = os.getenv("REFRESH_TOKEN_EXPIRE_DAYS")
 
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development").lower()
+_cookie_secure_env = os.getenv("COOKIE_SECURE")
+if _cookie_secure_env is not None:
+    COOKIE_SECURE = _cookie_secure_env.lower() in ("1", "true", "yes")
+else:
+    COOKIE_SECURE = ENVIRONMENT != "development"
+
 
 async def create_access_token(user_id: int) -> str:
     jti = str(uuid4())
@@ -210,7 +217,7 @@ async def get_access_w_refresh(
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=True,
+        secure=COOKIE_SECURE,
         samesite="strict",
         max_age=int(ACCESS_TOKEN_EXPIRE_MINUTES),
     )
@@ -222,7 +229,7 @@ def create_cookie_file(response: dict, access_token: str, refresh_token: str):
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=True,
+        secure=COOKIE_SECURE,
         samesite="strict",
         max_age=int(ACCESS_TOKEN_EXPIRE_MINUTES),
     )
@@ -230,7 +237,7 @@ def create_cookie_file(response: dict, access_token: str, refresh_token: str):
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=True,
+        secure=COOKIE_SECURE,
         samesite="strict",
         max_age=int(REFRESH_TOKEN_EXPIRE_DAYS) * 86400,
     )

@@ -19,9 +19,9 @@ async def upload_file(
     session: SessionDep,
     user_id: int,
     file: UploadFile = File(...),
-    token: dict = Depends(get_access_token),
+    current_user_id: int = Depends(get_access_token)
 ):
-    if user_id != token["user_id"]:
+    if user_id != current_user_id:
         raise HTTPException(
             status_code=403,
             detail="Пользователь не смог поменять данные другого человека",
@@ -52,8 +52,10 @@ async def upload_file(
 
 @app.put("/change_profile")
 async def change_profile(
-    session: SessionDep, data: ChangeProfile, user_id: int = Depends(get_access_token)):
-    if user_id != data.user_id:
+    session: SessionDep,
+    data: ChangeProfile,
+    current_user_id: int = Depends(get_access_token)):
+    if current_user_id != data.user_id:
         raise HTTPException(
             status_code=400,
             detail="Данный пользователь не имеет права изменять данные другого id",

@@ -39,6 +39,8 @@
 - `SECRET_KEY` – секретный ключ для подписи JWT
 - `ACCESS_TOKEN_EXPIRE_MINUTES` – срок действия access-токена в минутах
 - `REFRESH_TOKEN_EXPIRE_DAYS` – срок действия refresh-токена в днях
+- `ENVIRONMENT` – тип окружения (`development` или `production`), влияет на работу флага `COOKIE_SECURE`
+- `COOKIE_SECURE` – устанавливает атрибут `secure` у cookie. По умолчанию `False` в режиме `development`
 - `TEST_DATABASE_URL` – строка подключения к БД для тестов
 
 ## Миграции БД (Alembic)
