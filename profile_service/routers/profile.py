@@ -50,7 +50,7 @@ async def check_time(user_id: int):
     if client is None:
         return HTTPException(status_code=404, detail="Данный пользователь не зарегистирован на сайте")
     try:
-        last_visit = datetime.fromisoformat(client.decode("utf-8"))
+        last_visit = datetime.fromisoformat(client.encode("utf-8"))
     except ValueError:
         return {"status": "error", "detail": "Неверный формат времени"}
 

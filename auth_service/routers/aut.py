@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 
 from auth_service.database.base import SessionDep
 from auth_service.database.redis import redis_client
-from auth_service.shapes.shapes import Authorization, Registration
+from auth_service.shapes.shapes import Authorization, Registration, Test
 from auth_service.utils.JWT import (create_access_token, create_cookie_file,
                                     create_refresh_token, get_access_token,
                                     get_access_w_refresh, get_refresh_jti,)
@@ -28,6 +28,11 @@ REFRESH_TOKEN_EXPIRE_DAYS = os.getenv("REFRESH_TOKEN_EXPIRE_DAYS")
 
 
 app = APIRouter()
+@app.post("/Test")
+async def registration(data: Test, session: SessionDep):
+    new_user = await create_user(session, data.login, data.password)
+    return True
+
 
 
 @app.post("/registration")

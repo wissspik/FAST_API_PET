@@ -12,21 +12,29 @@ from article_service.database.mongo import db
 app = APIRouter()
 
 @app.post("/profile/create_article")
-async def create_article(article: Article,user_id : int = Depends(get_access_token)):
-    article['timenow'] = datetime.now(timezone.utc)
-    article['editing'] = 'False'
-    await db[str(user_id)].insert_one(article)
-    return {'message':'статья успешно создана'}
+async def create_article(article: Article, user_id: int = Depends(get_access_token)):
+    article_data = article.dict()
+    article_data["timenow"] = datetime.now(timezone.utc)
+    article_data["editing"] = False
+    await db[str(user_id)].insert_one(article_data)
+    return {"message": "статья успешно создана"}
 # сделать удаление и редактирования
 # поднять и посмотреть что есть
 
 @app.post("/profile/take_article")
-async def take_article(user_id : int):
+async def take_article(user_id: int):
     cursor = db[str(user_id)].find({})
     articles = await cursor.to_list(length=None)
     if not articles:
         raise HTTPException(status_code=404, detail="Статей не найдено")
-    return articles
+
+    clean = []
+    for doc in articles:
+        doc["id"] = str(doc["_id"])
+        del doc["_id"]
+        clean.append(doc)
+
+    return clean
 
 
 '''

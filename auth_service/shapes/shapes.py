@@ -25,3 +25,7 @@ class DeleteAccount(BaseModel):
 class ChangeLogin(BaseModel):
     old_login: str
     new_login: str
+
+class Test(BaseModel):
+    login: str
+    password: str
