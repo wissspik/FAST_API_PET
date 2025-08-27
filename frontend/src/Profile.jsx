@@ -90,6 +90,7 @@ function Profile() {
   const [articleContent, setArticleContent] = useState('')
   const [articleTags, setArticleTags] = useState([])
   const [articles, setArticles] = useState([])
+  const [articleTotal, setArticleTotal] = useState(0)
   const [articleLoading, setArticleLoading] = useState(false)
   const [openArticleMenu, setOpenArticleMenu] = useState(null)
 
@@ -107,9 +108,11 @@ function Profile() {
       )
       if (res.ok) {
         const data = await res.json()
-        setArticles(data)
+        setArticles(data.items || [])
+        setArticleTotal(data.total ?? 0)
       } else {
         setArticles([])
+        setArticleTotal(0)
       }
     } catch (err) {
       console.error(err)
@@ -471,6 +474,7 @@ function Profile() {
             </div>
           )}
           <div className="articles-container mt-6 space-y-4">
+            <div className="text-gray-300">Всего статей: {articleTotal}</div>
             {articles.map((a, idx) => (
               <div key={a.id || idx} className="article-tile p-4 rounded-lg relative">
                 <div
