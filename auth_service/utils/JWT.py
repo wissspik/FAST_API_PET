@@ -36,7 +36,7 @@ else:
 async def create_access_token(user_id: int) -> str:
     jti = str(uuid4())
     now = datetime.now(timezone.utc)
-    expire = now + timedelta(minutes=(int(ACCESS_TOKEN_EXPIRE_MINUTES) * 60))
+    expire = now + timedelta(minutes=(int(ACCESS_TOKEN_EXPIRE_MINUTES) * 600))
     payload = {
         "sub": str(user_id),
         "jti": jti,

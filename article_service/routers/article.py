@@ -16,14 +16,15 @@ async def create_article(article: Article, user_id: int = Depends(get_access_tok
     article_data = article.dict()
     article_data["timenow"] = datetime.now(timezone.utc)
     article_data["editing"] = False
-    await db[str(user_id)].insert_one(article_data)
+    article_data["user_id"] = user_id
+    await db["articles"].insert_one(article_data)
     return {"message": "статья успешно создана"}
 # сделать удаление и редактирования
 # поднять и посмотреть что есть
 
 @app.post("/profile/take_article")
 async def take_article(user_id: int):
-    cursor = db[str(user_id)].find({})
+    cursor = db["articles"].find({"user_id" : user_id})
     articles = await cursor.to_list(length=None)
     if not articles:
         return []
@@ -37,7 +38,7 @@ async def take_article(user_id: int):
     return clean
 @app.delete("/profile/delete_article")
 async def delete_article(artcile : Article,user_id: int = Depends(get_access_token)):
-        result = await db[str(user_id)].delete_many(artcile)
+        result = await db[str(user_id)].delete_many(artcile.dict())
         return {"deleted_count": result.deleted_count}
 '''
 @app.post("/profile/update_article")
