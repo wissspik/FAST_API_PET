@@ -90,6 +90,7 @@ function Profile() {
   const [articleContent, setArticleContent] = useState('')
   const [articleTags, setArticleTags] = useState([])
   const [articles, setArticles] = useState([])
+  const [articleLoading, setArticleLoading] = useState(false)
 
   const fileInputRef = useRef(null)
   const [photoSrc, setPhotoSrc] = useState(null)
@@ -273,6 +274,7 @@ function Profile() {
 
   const handleArticleSubmit = async (e) => {
     e.preventDefault()
+    if (articleLoading) return
     if (articleTags.length > 5) {
       alert('Пожалуйста, выберите не более 5 интересов')
       return
@@ -284,6 +286,7 @@ function Profile() {
       tags: articleTags,
     }
     try {
+      setArticleLoading(true)
       const res = await fetch('http://localhost:8003/profile/create_article', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -293,15 +296,20 @@ function Profile() {
       if (res.ok) {
         await fetchArticles(currentUserId)
         alert('Статья успешно создана!')
+        setShowArticleForm(false)
+        setArticleTitle('')
+        setArticleSubtitle('')
+        setArticleContent('')
+        setArticleTags([])
+      } else {
+        const errorText = await res.text()
+        alert(errorText)
       }
     } catch (err) {
       console.error(err)
+    } finally {
+      setArticleLoading(false)
     }
-    setShowArticleForm(false)
-    setArticleTitle('')
-    setArticleSubtitle('')
-    setArticleContent('')
-    setArticleTags([])
   }
 
   return (
@@ -657,10 +665,14 @@ function Profile() {
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105"
+                  disabled={articleLoading}
+                  className="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 disabled:opacity-50"
                 >
-                  Создать статью
+                  {articleLoading ? 'Создание...' : 'Создать статью'}
                 </button>
+                {articleLoading && (
+                  <div className="text-center text-gray-400 mt-2">Загрузка...</div>
+                )}
               </form>
             </div>
           </div>
