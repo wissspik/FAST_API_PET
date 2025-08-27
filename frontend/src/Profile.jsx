@@ -91,6 +91,7 @@ function Profile() {
   const [articleTags, setArticleTags] = useState([])
   const [articles, setArticles] = useState([])
   const [articleLoading, setArticleLoading] = useState(false)
+  const [openArticleMenu, setOpenArticleMenu] = useState(null)
 
   const fileInputRef = useRef(null)
   const [photoSrc, setPhotoSrc] = useState(null)
@@ -114,6 +115,50 @@ function Profile() {
       console.error(err)
     }
   }
+
+  const handleDeleteArticle = async (article) => {
+    const confirmed = window.confirm('Удалить статью?')
+    if (!confirmed) return
+    try {
+      const res = await fetch('http://localhost:8003/profile/delete_article', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          title: article.title,
+          subtitle: article.subtitle,
+          content: article.content,
+          tags: article.tags,
+        }),
+      })
+      if (res.ok) {
+        setArticles((prev) => prev.filter((a) => a.id !== article.id))
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const handleEditArticle = (article) => {
+    console.log('edit', article)
+  }
+
+  const handleReportArticle = (article) => {
+    console.log('report', article)
+  }
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (
+        !e.target.closest('.article-options') &&
+        !e.target.closest('.article-menu')
+      ) {
+        setOpenArticleMenu(null)
+      }
+    }
+    document.addEventListener('click', handleClick)
+    return () => document.removeEventListener('click', handleClick)
+  }, [])
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -427,10 +472,38 @@ function Profile() {
           )}
           <div className="articles-container mt-6 space-y-4">
             {articles.map((a, idx) => (
-              <div key={idx} className="article-tile p-4 rounded-lg relative">
-                <div className="article-options">
+              <div key={a.id || idx} className="article-tile p-4 rounded-lg relative">
+                <div
+                  className="article-options"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setOpenArticleMenu(openArticleMenu === idx ? null : idx)
+                  }}
+                >
                   <i className="fas fa-ellipsis-h" />
                 </div>
+                {openArticleMenu === idx && (
+                  <div className="article-menu">
+                    <div
+                      className="article-menu-item"
+                      onClick={() => handleDeleteArticle(a)}
+                    >
+                      <i className="fas fa-trash mr-2" /> Удалить
+                    </div>
+                    <div
+                      className="article-menu-item"
+                      onClick={() => handleEditArticle(a)}
+                    >
+                      <i className="fas fa-edit mr-2" /> Изменить
+                    </div>
+                    <div
+                      className="article-menu-item"
+                      onClick={() => handleReportArticle(a)}
+                    >
+                      <i className="fas fa-flag mr-2" /> Пожаловаться
+                    </div>
+                  </div>
+                )}
                 <h3 className="text-xl font-bold mb-1">{a.title}</h3>
                 <h4 className="text-gray-300 mb-2">{a.subtitle}</h4>
                 <p className="text-gray-200 mb-2">{a.content}</p>

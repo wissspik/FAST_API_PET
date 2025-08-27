@@ -305,6 +305,30 @@ body {
     color: #ffffff;
 }
 
+.article-menu {
+    position: absolute;
+    top: 2rem;
+    right: 0.5rem;
+    background: #0f0f0f;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    padding: 0.25rem 0;
+    z-index: 10;
+}
+
+.article-menu-item {
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #e5e7eb;
+    cursor: pointer;
+}
+
+.article-menu-item:hover {
+    background: #1e1e1e;
+}
+
 .article-actions {
     display: flex;
     gap: 1rem;
