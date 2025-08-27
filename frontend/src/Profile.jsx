@@ -123,7 +123,7 @@ function Profile() {
   }
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const init = async () => {
       const idFromProtected = await getUserId()
       if (idFromProtected === null) {
         navigate('/login')
@@ -139,7 +139,16 @@ function Profile() {
       if (!userId && id) {
         navigate(`/profile/${id}`, { replace: true })
       }
+    }
 
+    init()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!currentUserId) return
+
+    const fetchProfile = async () => {
+      const id = userId || currentUserId
       const profileRes = await fetch(`http://localhost:8002/profile/${id}`, {
         credentials: 'include',
       })
@@ -165,9 +174,10 @@ function Profile() {
         setEditCity(user_data.city || '')
         setEditGender(user_data.gender || 'male')
         setNotFound(false)
-        const statusRes = await fetch(`http://localhost:8002/check_time?user_id=${id}`, {
-          method: 'POST',
-        })
+        const statusRes = await fetch(
+          `http://localhost:8002/check_time?user_id=${id}`,
+          { method: 'POST' },
+        )
         if (statusRes.ok) {
           const { status } = await statusRes.json()
           setStatus(status)
@@ -179,7 +189,7 @@ function Profile() {
     }
 
     fetchProfile()
-  }, [navigate, userId])
+  }, [currentUserId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const menuItems = [
     {
