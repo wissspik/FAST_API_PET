@@ -90,8 +90,7 @@ function Profile() {
   const [articleContent, setArticleContent] = useState('')
   const [articleTags, setArticleTags] = useState([])
   const [articles, setArticles] = useState([])
-  const [articlesMessage, setArticlesMessage] = useState('')
-
+  const [articleLoading, setArticleLoading] = useState(false)
 
   const fileInputRef = useRef(null)
   const [photoSrc, setPhotoSrc] = useState(null)
@@ -101,29 +100,23 @@ function Profile() {
       const res = await fetch(
         `http://localhost:8003/profile/take_article?user_id=${id}`,
         {
-          method: 'GET',
+          method: 'POST',
           credentials: 'include',
         },
       )
       if (res.ok) {
         const data = await res.json()
         setArticles(data)
-        setArticlesMessage('')
-      } else if (res.status === 404) {
-        setArticles([])
-        setArticlesMessage('Статей не найдено')
       } else {
-        setArticlesMessage('')
-        alert('Не удалось загрузить статьи')
+        setArticles([])
       }
     } catch (err) {
       console.error(err)
-      alert('Не удалось загрузить статьи')
     }
   }
 
   useEffect(() => {
-    const init = async () => {
+    const fetchProfile = async () => {
       const idFromProtected = await getUserId()
       if (idFromProtected === null) {
         navigate('/login')
@@ -139,16 +132,7 @@ function Profile() {
       if (!userId && id) {
         navigate(`/profile/${id}`, { replace: true })
       }
-    }
 
-    init()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (!currentUserId) return
-
-    const fetchProfile = async () => {
-      const id = userId || currentUserId
       const profileRes = await fetch(`http://localhost:8002/profile/${id}`, {
         credentials: 'include',
       })
@@ -174,10 +158,9 @@ function Profile() {
         setEditCity(user_data.city || '')
         setEditGender(user_data.gender || 'male')
         setNotFound(false)
-        const statusRes = await fetch(
-          `http://localhost:8002/check_time?user_id=${id}`,
-          { method: 'POST' },
-        )
+        const statusRes = await fetch(`http://localhost:8002/check_time?user_id=${id}`, {
+          method: 'POST',
+        })
         if (statusRes.ok) {
           const { status } = await statusRes.json()
           setStatus(status)
@@ -189,7 +172,7 @@ function Profile() {
     }
 
     fetchProfile()
-  }, [currentUserId]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [navigate, userId])
 
   const menuItems = [
     {
@@ -443,35 +426,31 @@ function Profile() {
             </div>
           )}
           <div className="articles-container mt-6 space-y-4">
-            {articlesMessage ? (
-              <div className="text-center text-gray-400">{articlesMessage}</div>
-            ) : (
-              articles.map((a, idx) => (
-                <div key={idx} className="article-tile p-4 rounded-lg relative">
-                  <div className="article-options">
-                    <i className="fas fa-ellipsis-h" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-1">{a.title}</h3>
-                  <h4 className="text-gray-300 mb-2">{a.subtitle}</h4>
-                  <p className="text-gray-200 mb-2">{a.content}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {a.tags?.map((t) => (
-                      <span key={t} className="tag bg-gray-600 px-2 py-1 rounded text-sm">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="article-actions">
-                    <button className="action-btn like-btn">
-                      <i className="far fa-heart mr-1" /> Лайк
-                    </button>
-                    <button className="action-btn comment-btn">
-                      <i className="far fa-comment mr-1" /> Комментарий
-                    </button>
-                  </div>
+            {articles.map((a, idx) => (
+              <div key={idx} className="article-tile p-4 rounded-lg relative">
+                <div className="article-options">
+                  <i className="fas fa-ellipsis-h" />
                 </div>
-              ))
-            )}
+                <h3 className="text-xl font-bold mb-1">{a.title}</h3>
+                <h4 className="text-gray-300 mb-2">{a.subtitle}</h4>
+                <p className="text-gray-200 mb-2">{a.content}</p>
+                <div className="flex flex-wrap gap-2">
+                  {a.tags?.map((t) => (
+                    <span key={t} className="tag bg-gray-600 px-2 py-1 rounded text-sm">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+                <div className="article-actions">
+                  <button className="action-btn like-btn">
+                    <i className="far fa-heart mr-1" /> Лайк
+                  </button>
+                  <button className="action-btn comment-btn">
+                    <i className="far fa-comment mr-1" /> Комментарий
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
         )}

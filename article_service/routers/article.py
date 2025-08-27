@@ -26,7 +26,7 @@ async def take_article(user_id: int):
     cursor = db[str(user_id)].find({})
     articles = await cursor.to_list(length=None)
     if not articles:
-        raise HTTPException(status_code=404, detail="Статей не найдено")
+        return []
 
     clean = []
     for doc in articles:
@@ -35,8 +35,10 @@ async def take_article(user_id: int):
         clean.append(doc)
 
     return clean
-
-
+@app.delete("/profile/delete_article")
+async def delete_article(artcile : Article,user_id: int = Depends(get_access_token)):
+        result = await db[str(user_id)].delete_many(artcile)
+        return {"deleted_count": result.deleted_count}
 '''
 @app.post("/profile/update_article")
 async def update_article(article: Article,user_id : int = Depends(get_access_token)):

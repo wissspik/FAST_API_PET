@@ -35,6 +35,7 @@ async def profile(user_id: int, user_id_token: int = Depends(get_access_token)):
         "file_size": user_photo.file_size if user_photo else None,
     }
     return user_data
+'''
 @app.post("/record_visit_time")
 async def time_visit(user_id: int = Depends(get_access_token)):
     user = await get_user_id_profile(user_id)
@@ -60,4 +61,4 @@ async def check_time(user_id: int):
         return {"status": "unactivate"}
     else:
         return {"status": "activate"}
-
+'''
