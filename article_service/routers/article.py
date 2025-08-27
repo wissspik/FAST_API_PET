@@ -1,4 +1,4 @@
-from fastapi import APIRouter,Depends,HTTPException
+from fastapi import APIRouter,Depends,HTTPException, Query
 
 from article_service.shapes.shapes import Article
 
@@ -17,17 +17,28 @@ async def create_article(article: Article, user_id: int = Depends(get_access_tok
     article_data["timenow"] = datetime.now(timezone.utc)
     article_data["editing"] = False
     article_data["user_id"] = user_id
-    await db["articles"].insert_one(article_data)
+    try:
+        await db["articles"].insert_one(article_data)
+    except Exception:
+        raise HTTPException(status_code=500, detail="Ошибка при создании статьи")
     return {"message": "статья успешно создана"}
 # сделать удаление и редактирования
 # поднять и посмотреть что есть
 
 @app.post("/profile/take_article")
-async def take_article(user_id: int):
-    cursor = db["articles"].find({"user_id" : user_id})
-    articles = await cursor.to_list(length=None)
-    if not articles:
-        return []
+async def take_article(
+    user_id: int,
+    limit: int = Query(10, ge=1),
+    offset: int = Query(0, ge=0),
+):
+    try:
+        cursor = (
+            db["articles"].find({"user_id": user_id}).skip(offset).limit(limit)
+        )
+        articles = await cursor.to_list(length=None)
+        total = await db["articles"].count_documents({"user_id": user_id})
+    except Exception:
+        raise HTTPException(status_code=500, detail="Ошибка при получении статей")
 
     clean = []
     for doc in articles:
@@ -35,11 +46,15 @@ async def take_article(user_id: int):
         del doc["_id"]
         clean.append(doc)
 
-    return clean
+    return {"items": clean, "total": total}
+
 @app.delete("/profile/delete_article")
-async def delete_article(artcile : Article,user_id: int = Depends(get_access_token)):
-        result = await db[str(user_id)].delete_many(artcile.dict())
-        return {"deleted_count": result.deleted_count}
+async def delete_article(article: Article, user_id: int = Depends(get_access_token)):
+    try:
+        result = await db[str(user_id)].delete_many(article.dict())
+    except Exception:
+        raise HTTPException(status_code=500, detail="Ошибка при удалении статьи")
+    return {"deleted_count": result.deleted_count}
 '''
 @app.post("/profile/update_article")
 async def update_article(article: Article,user_id : int = Depends(get_access_token)):
