@@ -56,8 +56,6 @@ async def delete_article(article: Article, user_id: int = Depends(get_access_tok
         raise HTTPException(status_code=500, detail="Ошибка при удалении статьи")
     return {"deleted_count": result.deleted_count}
 '''
-@app.post("/profile/update_article")
-async def update_article(article: Article,user_id : int = Depends(get_access_token)):
+@app.put("/profile/put_article")
+async def update_article(new_article: Article,user_id : int = Depends(get_access_token)):
 '''
-
-

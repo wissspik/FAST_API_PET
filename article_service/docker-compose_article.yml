@@ -15,5 +15,6 @@ services:
       - "8003:8003"
     networks:
       - kong-net
+
 networks:
   kong-net:
