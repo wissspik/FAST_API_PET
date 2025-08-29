@@ -93,6 +93,7 @@ function Profile() {
   const [articleTotal, setArticleTotal] = useState(0)
   const [articleLoading, setArticleLoading] = useState(false)
   const [openArticleMenu, setOpenArticleMenu] = useState(null)
+  const [editingArticle, setEditingArticle] = useState(null)
 
   const fileInputRef = useRef(null)
   const [photoSrc, setPhotoSrc] = useState(null)
@@ -143,7 +144,13 @@ function Profile() {
   }
 
   const handleEditArticle = (article) => {
-    console.log('edit', article)
+    setOpenArticleMenu(null)
+    setEditingArticle(article)
+    setArticleTitle(article.title || '')
+    setArticleSubtitle(article.subtitle || '')
+    setArticleContent(article.content || '')
+    setArticleTags(article.tags || [])
+    setShowArticleForm(true)
   }
 
   const handleReportArticle = (article) => {
@@ -335,16 +342,28 @@ function Profile() {
     }
     try {
       setArticleLoading(true)
-      const res = await fetch('http://localhost:8003/profile/create_article', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(data),
-      })
+      let res
+      if (editingArticle) {
+        data.article_id = editingArticle.article_id
+        res = await fetch('http://localhost:8003/profile/put_article', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(data),
+        })
+      } else {
+        res = await fetch('http://localhost:8003/profile/create_article', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(data),
+        })
+      }
       if (res.ok) {
         await fetchArticles(currentUserId)
-        alert('Статья успешно создана!')
+        alert(editingArticle ? 'Статья успешно обновлена!' : 'Статья успешно создана!')
         setShowArticleForm(false)
+        setEditingArticle(null)
         setArticleTitle('')
         setArticleSubtitle('')
         setArticleContent('')
@@ -459,7 +478,14 @@ function Profile() {
                   </button>
                   <button
                     className="write-article-btn"
-                    onClick={() => setShowArticleForm(true)}
+                    onClick={() => {
+                      setEditingArticle(null)
+                      setArticleTitle('')
+                      setArticleSubtitle('')
+                      setArticleContent('')
+                      setArticleTags([])
+                      setShowArticleForm(true)
+                    }}
                   >
                     <i className="fas fa-pen" /> Написать статью
                   </button>
@@ -518,6 +544,11 @@ function Profile() {
                     </span>
                   ))}
                 </div>
+                {a.timenow && (
+                  <div className="text-gray-400 text-sm mt-2">
+                    {new Date(a.timenow).toLocaleString()}
+                  </div>
+                )}
                 <div className="article-actions">
                   <button className="action-btn like-btn">
                     <i className="far fa-heart mr-1" /> Лайк
@@ -674,11 +705,19 @@ function Profile() {
         <div className="modal-overlay">
           <div className="modal article-modal">
 
-            <button className="close-btn" onClick={() => setShowArticleForm(false)}>
+            <button
+              className="close-btn"
+              onClick={() => {
+                setShowArticleForm(false)
+                setEditingArticle(null)
+              }}
+            >
               &times;
             </button>
             <div className="p-8 text-gray-200">
-              <h1 className="text-3xl font-bold mb-6">Создание статьи</h1>
+              <h1 className="text-3xl font-bold mb-6">
+                {editingArticle ? 'Редактирование статьи' : 'Создание статьи'}
+              </h1>
               <form onSubmit={handleArticleSubmit}>
                 <div className="mb-6">
                   <label htmlFor="articleTitle" className="block text-gray-300 font-medium mb-2">
@@ -745,7 +784,13 @@ function Profile() {
                   disabled={articleLoading}
                   className="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 disabled:opacity-50"
                 >
-                  {articleLoading ? 'Создание...' : 'Создать статью'}
+                  {articleLoading
+                    ? editingArticle
+                      ? 'Обновление...'
+                      : 'Создание...'
+                    : editingArticle
+                      ? 'Обновить статью'
+                      : 'Создать статью'}
                 </button>
                 {articleLoading && (
                   <div className="text-center text-gray-400 mt-2">Загрузка...</div>
