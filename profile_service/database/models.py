@@ -38,6 +38,7 @@ class Photo(Base):
         ForeignKey("profile_service.id", ondelete="CASCADE"),
         nullable=False,
         passive_deletes=True,
+        unique=True,
     )
     file_name: Mapped[str] = mapped_column(nullable=False)
     mime_type: Mapped[str] = mapped_column(nullable=False)

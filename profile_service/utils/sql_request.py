@@ -16,7 +16,12 @@ async def get_user_id_profile(user_id: int) -> Profile | None:
 
 async def get_user_id_photo(user_id: int) -> Photo | None:
     async with new_session() as session:
-        stml = select(Photo).filter_by(profile_id=user_id)
+        stml = (
+            select(Photo)
+            .filter_by(profile_id=user_id)
+            .order_by(Photo.id.desc())
+            .limit(1)
+        )
         result = await session.execute(stml)
         return result.scalar_one_or_none()
 

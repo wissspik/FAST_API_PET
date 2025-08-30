@@ -14,7 +14,7 @@ app = APIRouter(tags=["profile_service"])
 
 
 @app.get("/profile/{user_id}")
-async def profile(user_id: int):
+async def profile(user_id: int,user_id_token: int = Depends(get_user_id_profile)):
     user = await get_user_id_profile(user_id)
     user_photo = await get_user_id_photo(user_id)
     if user is None:
@@ -32,6 +32,10 @@ async def profile(user_id: int):
         "mime_type": user_photo.mime_type if user_photo else None,
         "file_size": user_photo.file_size if user_photo else None,
     }
+    if user_id != user_id_token:
+        user_data["role"] = 'guest'
+    else:
+        user_data["role"] = 'owner'
     return user_data
 '''
 @app.post("/record_visit_time")

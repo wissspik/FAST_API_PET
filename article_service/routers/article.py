@@ -58,7 +58,7 @@ async def delete_article(article: Article, user_id: int = Depends(get_access_tok
         raise HTTPException(status_code=500, detail="Ошибка при удалении статьи")
     return {"message": "Статья успешно удалена"}
 
-@app.put("/profile/update_article")
+@app.patch("/profile/update_article")
 async def update_article(
     article: ArticleUpdate,
     user_id: int = Depends(get_access_token)):
