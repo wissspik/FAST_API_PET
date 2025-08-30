@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Depends,HTTPException, Query
 
-from article_service.shapes.shapes import Article
+from article_service.shapes.shapes import Article,ArticleUpdate
 
 import uuid
 
@@ -16,7 +16,7 @@ app = APIRouter()
 @app.post("/profile/create_article")
 async def create_article(article: Article, user_id: int = Depends(get_access_token)):
     article_data = article.dict()
-    article_data["article_id"] = uuid.uuid4()
+    article_data["article_id"] = str(uuid.uuid4())
     article_data["timenow"] = datetime.now(timezone.utc)
     article_data["editing"] = False
     article_data["user_id"] = user_id
@@ -52,34 +52,28 @@ async def take_article(
 @app.delete("/profile/delete_article")
 async def delete_article(article: Article, user_id: int = Depends(get_access_token)):
     try:
-        result = await db[str(user_id)].delete_many(article.dict())
+        result = await db["articles"].delete_many(article.dict())
+        print(db["articles"])
     except Exception:
         raise HTTPException(status_code=500, detail="Ошибка при удалении статьи")
-    return {"deleted_count": result.deleted_count}
+    return {"message": "Статья успешно удалена"}
 
-@app.put("/profile/update_article/{article_id}")
+@app.put("/profile/update_article")
 async def update_article(
-    article_id: str,
-    article: Article,
-    user_id: int = Depends(get_access_token),
-):
-    """Update an existing article belonging to the current user."""
-    update_data = {
-        k: v
-        for k, v in article.model_dump().items()
-        if v is not None
-    }
-
+    article: ArticleUpdate,
+    user_id: int = Depends(get_access_token)):
     try:
         result = await db["articles"].update_one(
-            {"article_id": article_id, "user_id": user_id},
-            {"$set": update_data},
+            {"id": ArticleUpdate.id},  # фильтр
+            {"$set": {"Editing": True, # изменения
+                      "title" : ArticleUpdate.title,
+                      "subtitle" : ArticleUpdate.subtitle,
+                      "content" : ArticleUpdate.content,
+                      "tags" : ArticleUpdate.tags
+                      }
+            }
         )
     except Exception:
-        raise HTTPException(status_code=500, detail="Ошибка при обновлении статьи")
-
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Статья не найдена")
-
+        raise HTTPException(status_code=500, detail="Ошибка при изменение статьи")
     return {"message": "статья успешно обновлена"}
 
