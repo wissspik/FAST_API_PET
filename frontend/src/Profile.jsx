@@ -345,7 +345,7 @@ function Profile() {
       let res
       if (editingArticle) {
         data.article_id = editingArticle.article_id
-        res = await fetch('http://localhost:8003/profile/put_article', {
+        res = await fetch('http://localhost:8003/profile/update_article', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -548,6 +548,9 @@ function Profile() {
                   <div className="text-gray-400 text-sm mt-2">
                     {new Date(a.timenow).toLocaleString()}
                   </div>
+                )}
+                {a.editing && (
+                  <span className="edited-label">изменено</span>
                 )}
                 <div className="article-actions">
                   <button className="action-btn like-btn">
