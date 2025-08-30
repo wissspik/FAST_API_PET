@@ -10,22 +10,17 @@ from auth_service.database.models import User
 from auth_service.database.redis import redis_client
 from auth_service.utils.password_val_hash import hash_password, verify_password
 
-
 logger = logging.getLogger(__name__)
-
 
 async def get_user_id(session: SessionDep, id: str) -> Optional[User]:
     stmt = select(User).filter_by(id=id)
     result = await session.execute(stmt)
     return result.scalar_one_or_none()
 
-
 async def get_user_login(session: SessionDep, login: str) -> bool:
     stmt = select(User).filter_by(login=login)
     result = await session.execute(stmt)
-    found_user = result.scalar_one_or_none()
     return result.scalar_one_or_none()
-
 
 async def get_user_login_password(
     session: SessionDep, login: str, password: str) -> Optional[User]:
@@ -36,14 +31,12 @@ async def get_user_login_password(
         return None
     return user
 
-
 async def create_user(session: SessionDep, login: str, password: str) -> User:
     hashed_password = hash_password(password)
     new_user = User(login=login, password=hashed_password, role="user")
     session.add(new_user)
     await session.commit()
     return new_user
-
 
 async def put_password(
     session: SessionDep, login: str, password_old: str, password_new: str

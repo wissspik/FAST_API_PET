@@ -26,14 +26,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 REFRESH_TOKEN_EXPIRE_DAYS = os.getenv("REFRESH_TOKEN_EXPIRE_DAYS")
 
-
 app = APIRouter()
-@app.post("/Test")
-async def registration(data: Test, session: SessionDep):
-    new_user = await create_user(session, data.login, data.password)
-    return True
-
-
 
 @app.post("/registration")
 async def registration(data: Registration, session: SessionDep):

@@ -14,9 +14,7 @@ app = APIRouter(tags=["profile_service"])
 
 
 @app.get("/profile/{user_id}")
-async def profile(user_id: int, user_id_token: int = Depends(get_access_token)):
-    if user_id_token != user_id:
-        raise  HTTPException(status_code=401,detail="человек не имеет прав")
+async def profile(user_id: int):
     user = await get_user_id_profile(user_id)
     user_photo = await get_user_id_photo(user_id)
     if user is None:
