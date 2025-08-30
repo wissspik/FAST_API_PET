@@ -50,7 +50,8 @@ function Profile() {
   const navigate = useNavigate()
   const { userId } = useParams()
   const [currentUserId, setCurrentUserId] = useState(null)
-  const isOwnProfile = !userId || Number(userId) === currentUserId
+  const [role, setRole] = useState('guest')
+  const isOwner = role === 'owner'
   const [menuOpen, setMenuOpen] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [status, setStatus] = useState('unactivate')
@@ -200,6 +201,7 @@ function Profile() {
         setAge(String(user_data.age || ''))
         setCity(user_data.city || '')
         setGender(user_data.gender || 'male')
+        setRole(user_data.role || 'guest')
         if (user_data.file && user_data.mime_type) {
           setPhotoSrc(`data:${user_data.mime_type};base64,${user_data.file}`)
         } else {
@@ -421,7 +423,7 @@ function Profile() {
                   className={`status-dot ${status === 'activate' ? 'bg-green-500' : 'bg-gray-500'}`}
                 />
               </div>
-              {isOwnProfile && (
+              {isOwner && (
                 <>
                   <input
                     type="file"
@@ -468,7 +470,7 @@ function Profile() {
                   <span className="info-value">{genderMap[gender] || gender}</span>
                 </div>
               </div>
-              {isOwnProfile ? (
+              {isOwner ? (
                 <>
                   <button
                     className="edit-profile-btn"
@@ -493,7 +495,7 @@ function Profile() {
               ) : null}
             </div>
           </div>
-          {!isOwnProfile && (
+          {!isOwner && (
             <div className="friend-actions">
               <button className="add-friend-btn">Добавить в друзья</button>
               <button className="send-message-btn">Написать сообщение</button>
@@ -514,24 +516,30 @@ function Profile() {
                 </div>
                 {openArticleMenu === idx && (
                   <div className="article-menu">
-                    <div
-                      className="article-menu-item"
-                      onClick={() => handleDeleteArticle(a)}
-                    >
-                      <i className="fas fa-trash mr-2" /> Удалить
-                    </div>
-                    <div
-                      className="article-menu-item"
-                      onClick={() => handleEditArticle(a)}
-                    >
-                      <i className="fas fa-edit mr-2" /> Изменить
-                    </div>
-                    <div
-                      className="article-menu-item"
-                      onClick={() => handleReportArticle(a)}
-                    >
-                      <i className="fas fa-flag mr-2" /> Пожаловаться
-                    </div>
+                    {isOwner && (
+                      <>
+                        <div
+                          className="article-menu-item"
+                          onClick={() => handleDeleteArticle(a)}
+                        >
+                          <i className="fas fa-trash mr-2" /> Удалить
+                        </div>
+                        <div
+                          className="article-menu-item"
+                          onClick={() => handleEditArticle(a)}
+                        >
+                          <i className="fas fa-edit mr-2" /> Изменить
+                        </div>
+                      </>
+                    )}
+                    {role !== 'owner' && (
+                      <div
+                        className="article-menu-item"
+                        onClick={() => handleReportArticle(a)}
+                      >
+                        <i className="fas fa-flag mr-2" /> Пожаловаться
+                      </div>
+                    )}
                   </div>
                 )}
                 <h3 className="text-xl font-bold mb-1">{a.title}</h3>
