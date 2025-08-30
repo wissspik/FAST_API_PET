@@ -64,15 +64,21 @@ async def update_article(
     user_id: int = Depends(get_access_token)):
     try:
         result = await db["articles"].update_one(
-            {"id": ArticleUpdate.id},  # фильтр
-            {"$set": {"Editing": True, # изменения
-                      "title" : ArticleUpdate.title,
-                      "subtitle" : ArticleUpdate.subtitle,
-                      "content" : ArticleUpdate.content,
-                      "tags" : ArticleUpdate.tags
-                      }
-            }
+            {"article_id": article.article_id, "user_id": user_id},
+            {
+                "$set": {
+                    "editing": True,
+                    "title": article.title,
+                    "subtitle": article.subtitle,
+                    "content": article.content,
+                    "tags": article.tags,
+                }
+            },
         )
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Статья не найдена")
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(status_code=500, detail="Ошибка при изменение статьи")
     return {"message": "статья успешно обновлена"}

@@ -6,7 +6,7 @@ class Article(BaseModel):
     content: str
     tags: list[str]
 class ArticleUpdate(BaseModel):
-    id : str
+    article_id: str
     title: str
     subtitle: str
     content: str
