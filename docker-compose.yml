@@ -39,6 +39,32 @@ services:
     ports:
       - "8001:8001"
 
+  service_articles:
+    container_name: articles
+    build:
+      context: .
+      dockerfile: backend/articles_service/Dockerfile
+    environment:
+      JWT_SECRET: dev-secret-change-me
+      JWT_ALG: HS256
+    depends_on:
+      - postgres
+    ports:
+      - "8002:8002"
+
+  service_profile:
+    container_name: profile
+    build:
+      context: .
+      dockerfile: backend/profile_service/Dockerfile
+    environment:
+      JWT_SECRET: dev-secret-change-me
+      JWT_ALG: HS256
+    depends_on:
+      - postgres
+    ports:
+      - "8003:8003"
+
 volumes:
   postgres_data:
   redis_data:
