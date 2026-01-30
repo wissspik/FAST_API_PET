@@ -1,48 +1,42 @@
-from http.client import HTTPException
 from fastapi import APIRouter
-from backend.entrance.utils.correct_data import check_password,check_login
-from backend.entrance.models.models import Registration
-from backend.entrance.utils.sql import get_user_login,create_user
+
 from backend.entrance.database.db import SessionDep
-app = APIRouter(prefix="/reg", tags=["registration"])
+from backend.entrance.models.models import Entrance, Refresh, Registration
+from backend.entrance.services.auth_service import login_user, refresh_access, register_user
+from backend.entrance.services.db_service import init_db as init_db_service
+app = APIRouter(tags=["registration"])
 
-@app.post("/")
-async def registration(data: Registration,session: SessionDep)->None:
+@app.post("/registration")
+async def registration(data: Registration,session: SessionDep)->dict:
     """
     Регистрация нового пользователя.
     :param data:JSON пользователя с данным:login, first_password, second_password
     :param session: сессия для работы с DB
     :return:None
     """
-    if check_login(data.login):
-        raise HTTPException(status_code=400, detail="Login is bad,check roulse web-site")
-    elif not check_password(data.first_password):
-        raise HTTPException(status_code=400, detail="Password not satisfy rules web-site")
-    elif data.first_password != data.second_password:
-        raise HTTPException(status_code=400, detail="First password not equal second password")
-    elif not get_user_login(session, data.login):
-        raise HTTPException(status_code=400, detail="login is occupied")
-    elif create_user(session, data.login,data.first_password):
-        return {"message": "User created successfully"}
-    else:
-        raise HTTPException(status_code=400, detail="bad error")
-
-async def login(data: Registration,session: SessionDep)->None:
+    return await register_user(data, session)
+@app.post("/entrance")
+async def login(data: Entrance,session: SessionDep)->dict:
     """
-    Регистрация нового пользователя.
+    Авторизация нового пользователя.
     :param data:JSON пользователя с данным:login, first_password, second_password
     :param session: сессия для работы с DB
     :return:None
     """
-    if check_login(data.login):
-        raise HTTPException(status_code=400, detail="Login is bad,check roulse web-site")
-    elif not check_password(data.first_password):
-        raise HTTPException(status_code=400, detail="Password not satisfy rules web-site")
-    elif data.first_password != data.second_password:
-        raise HTTPException(status_code=400, detail="First password not equal second password")
-    elif not get_user_login(session, data.login):
-        raise HTTPException(status_code=400, detail="login is occupied")
-    elif create_user(session, data.login,data.first_password):
-        return {"message": "User created successfully"}
-    else:
-        raise HTTPException(status_code=400, detail="bad error")
+    return await login_user(data, session)
+
+
+@app.post("/refresh")
+async def refresh(data: Refresh) -> dict:
+    """
+    Обновление access-токена по refresh-токену.
+    """
+    return await refresh_access(data)
+
+@app.post("/init-db")
+async def init_db() -> dict:
+    """
+    Создание таблиц в БД (если их ещё нет).
+    """
+    await init_db_service()
+    return {"message": "DB initialized"}
