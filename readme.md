@@ -10,7 +10,9 @@ docker compose up --build
 
 2. Приложение будет доступно по адресу:
 
-- API: `http://localhost:8001`
+- Auth API: `http://localhost:8001`
+- Articles API: `http://localhost:8002`
+- Profile API: `http://localhost:8003`
 
 3. Инициализируйте базу данных (создаст таблицы):
 
@@ -33,10 +35,12 @@ pip install -r backend/entrance/requirements.txt
    - PostgreSQL: `postgresql+asyncpg://appuser:strongpass@postgres:5432/full_db`
    - Redis: `redis://redis:6379/0`
 
-3. Запустите приложение:
+3. Запустите сервисы (в разных терминалах):
 
 ```bash
 uvicorn backend.entrance.main:app --host 0.0.0.0 --port 8001 --reload
+uvicorn backend.articles_service.main:app --host 0.0.0.0 --port 8002 --reload
+uvicorn backend.profile_service.main:app --host 0.0.0.0 --port 8003 --reload
 ```
 
 4. Инициализируйте базу данных:
@@ -47,11 +51,16 @@ curl -X POST http://localhost:8001/init-db
 
 ## Основные эндпоинты
 
+Auth (8001):
 - `POST /registration` — регистрация
 - `POST /entrance` — вход (получение access/refresh токенов)
 - `POST /refresh` — обновление access токена
+
+Profile (8003):
 - `GET /profile` — получить профиль (email/phone)
 - `PATCH /profile` — обновить/очистить email или phone
+
+Articles (8002):
 - `POST /articles` — создать статью
 - `GET /articles` — список своих статей
 - `GET /articles/{id}` — получить свою статью
