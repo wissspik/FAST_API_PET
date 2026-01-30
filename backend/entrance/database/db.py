@@ -1,11 +1,10 @@
 import os
 from typing import Annotated
-from dotenv import load_dotenv
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
-                                    create_async_engine,)
+                                    create_async_engine)
 
-DATABASE_URL = "postgresql+asyncpg://user:password@host:port/database"
+DATABASE_URL = "postgresql+asyncpg://appuser:strongpass@postgres:5432/full_db"
 
 engine = create_async_engine(DATABASE_URL, echo=True, future=True)
 

@@ -11,8 +11,8 @@ def check_login(login: str) -> bool:
     return True
 
 def check_password(password: str) -> bool:
-    patter = r'[A-Za-z@$!%*?&]{8,24}'
-    return bool(re.match(patter, password))
+    pattern = r'^[A-Za-z@$!%*?&]{8,24}$'
+    return bool(re.match(pattern, password))
 
 ph = PasswordHasher()
 

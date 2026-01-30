@@ -1,8 +1,6 @@
-from aiofiles.ospath import exists
 from backend.entrance.database.models import Role, User
-from backend.entrance.models.models import Registration
 from backend.entrance.database.db import SessionDep
-from sqlalchemy import select,and_
+from sqlalchemy import select
 
 from backend.entrance.utils.correct_data import hash_password,verify_password
 
@@ -12,6 +10,11 @@ async def get_user_login(session: SessionDep, login: str) -> bool:
     result = await session.scalar(stmt)
     print(result)
     return result is not None
+
+
+async def get_user_by_login(session: SessionDep, login: str) -> User | None:
+    stmt = select(User).where(User.login == login)
+    return await session.scalar(stmt)
 
 async def get_user_login_password(session: SessionDep, login: str, password: str) -> bool:
     stml = select(User).where(User.login==login)
