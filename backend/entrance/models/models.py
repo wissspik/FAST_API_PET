@@ -36,6 +36,43 @@ class ArticleOut(BaseModel):
     created_at: datetime
 
 
+class CommentCreate(BaseModel):
+    article_id: int
+    content: str = Field(min_length=1, max_length=1000)
+
+
+class CommentOut(BaseModel):
+    id: int
+    article_id: int
+    user_id: int
+    content: str
+    created_at: datetime
+
+
+class LikeOut(BaseModel):
+    id: int
+    article_id: int
+    user_id: int
+    created_at: datetime
+
+
+class LikeCount(BaseModel):
+    article_id: int
+    count: int
+
+
+class ViewOut(BaseModel):
+    id: int
+    article_id: int
+    user_id: int
+    viewed_at: datetime
+
+
+class ViewCount(BaseModel):
+    article_id: int
+    count: int
+
+
 class ProfileUpdate(BaseModel):
     email: Optional[str] = Field(default=None, max_length=120)
     phone: Optional[str] = Field(default=None, max_length=11)

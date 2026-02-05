@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
 from backend.entrance.database.db import SessionDep
@@ -16,6 +17,18 @@ def _profile_out(user: User) -> ProfileOut:
 @router.get("", response_model=ProfileOut)
 async def get_profile(user: User = Depends(get_current_user)) -> ProfileOut:
     return _profile_out(user)
+
+
+@router.get("/{login}", response_model=ProfileOut)
+async def get_profile_by_login(
+    login: str,
+    session: SessionDep,
+    user: User = Depends(get_current_user),
+) -> ProfileOut:
+    target = await session.scalar(select(User).where(User.login == login))
+    if not target:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return _profile_out(target)
 
 
 @router.patch("", response_model=ProfileOut)
