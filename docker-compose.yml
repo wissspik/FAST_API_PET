@@ -65,6 +65,19 @@ services:
     ports:
       - "8003:8003"
 
+  service_interactions:
+    container_name: interactions
+    build:
+      context: .
+      dockerfile: backend/interactions_service/Dockerfile
+    environment:
+      JWT_SECRET: dev-secret-change-me
+      JWT_ALG: HS256
+    depends_on:
+      - postgres
+    ports:
+      - "8004:8004"
+
 volumes:
   postgres_data:
   redis_data:
